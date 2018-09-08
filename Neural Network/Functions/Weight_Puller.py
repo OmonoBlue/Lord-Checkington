@@ -4,12 +4,37 @@ from NetworkRecorder import networkRecorder
 def weightPuller():
     weight = []
     nodes = []
+    weightList = []
 
     # Pulling weight file
     if os.path.lexists('WeightSaves') == False:
         os.makedirs('WeightSaves')
     try:
-        weightList = open(os.path.join('WeightSaves','latest_weight.txt', 'r'))
+        weight = open(os.path.join('WeightSaves','latest_weight.txt'), 'r')
+        layerNo = int(weight.readline())
+        weight.readline()
+
+
+        for i in range (layerNo + 1):
+            nodes.insert(i, int(weight.readline()))
+            
+        weight.readline()
+
+        for layer in range (0, layerNo):
+            weightList.insert(layer, [])
+
+            for node in range (0, int(nodes[layer])):
+                weightList[layer].insert(node, [])
+
+                
+                for i in range (0, int(nodes[layer+1])):
+                    weightList[layer][node].insert(i, int(weight.readline()))
+
+                weight.readline()
+
+                    
+        
+                         
     except(IOError):
         
         # Weight File isn't here so making a new one
@@ -36,5 +61,7 @@ def weightPuller():
                     weight[layer][node].insert(i, 1)
 
         networkRecorder(weight,nodes)
-
+        return weight
+    return (weightList, nodes)
+    
 

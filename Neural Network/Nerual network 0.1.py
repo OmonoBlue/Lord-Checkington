@@ -2,17 +2,16 @@ import math
 import os
 import importlib
 importlib.import_module('Functions')
-from Functions import Weight_Puller
+from Functions import Weight_Puller, maths, NetworkRecorder
 
 
-def sigmoid(x):
-    y = 1/(1+(e^-1))
-    return y
+
+neuralNetwork = []
+nodes = []
+
+(neuralNetwork, nodes) = Weight_Puller.weightPuller()
 
 
-Weight_Puller.weightPuller()
-        
-
-    
+ 
     
         
