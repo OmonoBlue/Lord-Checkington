@@ -13,6 +13,8 @@ class NewBoard():
         # Setup empty board
         self.pos = [[None for x in range(width)] for y in range(height)]
 
+        self.width = width
+        self.height = height
         # Setup pieces
 
         # total pieces remaining for each color
@@ -51,10 +53,51 @@ class NewBoard():
             if totalb < 1:
                 break
 
+    def Move(self, origin, dr, ds): #dr stands for direction row, ds stands for direction space (y and x respectively)
+        if abs(dr) != 1 or abs(ds) != 1:
+            print "Can only move 1 space in each direction!"
+        dest = (origin[0] + dr,origin[1] + ds)
+        print dest, "is the destination"
+        
+        print self.pos[origin[0]][origin[1]], "has been selected"
+        
+        if self.pos[origin[0]][origin[1]] != None: #Check if a playable piece has been selected
+            print "piece detected"
+            
+            #Check if playable piece is moveable in chosen direction
+            if (self.pos[origin[0]][origin[1]][PIECE_COL] == 0 and dr == 1) or (self.pos[origin[0]][origin[1]][PIECE_COL] == 1 and dr == -1) or self.pos[origin[0]][origin[1]][PIECE_KING] == True:
+                
+                if (dest[0] > self.width - 1 or dest[0] < 0) or (dest[1] > self.height - 1 or dest[1] < 0): #check if the piece is going to move out of bounds
+                    print "can't move, piece out of bounds"
+                elif self.pos[dest[0]][dest[1]] != None: #if the destination is not clear...
+                    print "destination blocked..."
+                    if self.pos[dest[0]][dest[1]][PIECE_COL] == self.pos[origin[0]][origin[1]][PIECE_COL]: #check if the space is occupied by your own colour
+                        print "can't move, piece occupied by own colour"
+                    else: #If piece is enemy color...
+                        if self.pos[dest[0] + dr][dest[1] + ds] != None: #check if piece is capturable
+                            print "can't move, capture blocked"
+                        else:
+                            #Capture piece
+                            print "capturing..."
+                            self.pos[dest[0] + dr][dest[1] + ds] = self.pos[origin[0]][origin[1]]
+                            self.pos[dest[0]][dest[1]] = None
+                            self.pos[origin[0]][origin[1]] = None
+                else:
+                    print "moving..."
+                    self.pos[dest[0]][dest[1]] = self.pos[origin[0]][origin[1]]
+                    self.pos[origin[0]][origin[1]] = None
+                    #Move piece
+            else:
+                print "You can't move in that direction!"
+        else:
+            print "Origin must be an existing piece"
+                            
         
     #print board
     def Draw(self):
-        for row in range(len(self.pos)):
+        print "\n"
+        for row in range(len(self.pos) - 1, -1, -1):
+            print row,
             for space in range(len(self.pos[row])):
                 if self.pos[row][space] != None:
                     if self.pos[row][space][PIECE_COL] == 0:
@@ -64,7 +107,17 @@ class NewBoard():
                 else:
                     print "·",
             print "\n",
+            if row == 0:
+                print "|",
+                for space in range(len(self.pos[row])):
+                    print space,
+                print "\n"
+                
 
-
+    
 board = NewBoard(8, 8)
+board.Draw()
+board.Move((2, 1), 1, 1)
+board.Draw()
+board.Move((3, 2), 1, 1)
 board.Draw()
