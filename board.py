@@ -2,8 +2,8 @@
 import math
 
 #some stuff to make code better and ez reads
-PIECE_COL = 0
-PIECE_KING = 1
+P_COL = 0
+P_KING = 1
 
 class NewBoard():
 
@@ -65,13 +65,13 @@ class NewBoard():
             print "piece detected"
             
             #Check if playable piece is moveable in chosen direction
-            if (self.pos[origin[0]][origin[1]][PIECE_COL] == 0 and dr == 1) or (self.pos[origin[0]][origin[1]][PIECE_COL] == 1 and dr == -1) or self.pos[origin[0]][origin[1]][PIECE_KING] == True:
+            if (self.pos[origin[0]][origin[1]][P_COL] == 0 and dr == 1) or (self.pos[origin[0]][origin[1]][P_COL] == 1 and dr == -1) or self.pos[origin[0]][origin[1]][P_KING] == True:
                 
                 if (dest[0] > self.width - 1 or dest[0] < 0) or (dest[1] > self.height - 1 or dest[1] < 0): #check if the piece is going to move out of bounds
                     print "can't move, piece out of bounds"
                 elif self.pos[dest[0]][dest[1]] != None: #if the destination is not clear...
                     print "destination blocked..."
-                    if self.pos[dest[0]][dest[1]][PIECE_COL] == self.pos[origin[0]][origin[1]][PIECE_COL]: #check if the space is occupied by your own colour
+                    if self.pos[dest[0]][dest[1]][P_COL] == self.pos[origin[0]][origin[1]][P_COL]: #check if the space is occupied by your own colour
                         print "can't move, piece occupied by own colour"
                     else: #If piece is enemy color...
                         if self.pos[dest[0] + dr][dest[1] + ds] != None: #check if piece is capturable
@@ -100,7 +100,7 @@ class NewBoard():
             print row,
             for space in range(len(self.pos[row])):
                 if self.pos[row][space] != None:
-                    if self.pos[row][space][PIECE_COL] == 0:
+                    if self.pos[row][space][P_COL] == 0:
                         print "O",
                     else:
                         print "X",
@@ -112,12 +112,33 @@ class NewBoard():
                 for space in range(len(self.pos[row])):
                     print space,
                 print "\n"
+
+    def GetStats(self):
+        statList = []
+        for row in range(len(self.pos)):
+            for space in range(len(self.pos[row])):
                 
+                mode = row % 2
+                
+                if space % 2 != mode:
+                    
+                    if self.pos[row][space] == None:
+                        statList.append(0)
+                        
+                    else:
+                        if self.pos[row][space][P_COL] == 0:
+                            if self.pos[row][space][P_KING] == True:
+                                statList.append(-3)
+                            else:
+                                statList.append(-1)
+                        else:
+                            if self.pos[row][space][P_KING] == True:
+                                statList.append(3)
+                            else:
+                                statList.append(1)
+        return statList
+                            
 
     
 board = NewBoard(8, 8)
-board.Draw()
-board.Move((2, 1), 1, 1)
-board.Draw()
-board.Move((3, 2), 1, 1)
 board.Draw()
