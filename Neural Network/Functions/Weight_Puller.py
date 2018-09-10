@@ -1,5 +1,6 @@
 import os
 from NetworkRecorder import networkRecorder
+from maths import initWeight
 
 def weightPuller():
     weight = []
@@ -58,10 +59,10 @@ def weightPuller():
 
                 
                 for i in range (0, int(nodes[layer+1])):
-                    weight[layer][node].insert(i, 1)
+                    weight[layer][node].insert(i, initWeight(layer))
 
         networkRecorder(weight,nodes)
-        return weight
+        return (weight, nodes)
     return (weightList, nodes)
     
 
