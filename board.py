@@ -82,11 +82,17 @@ class NewBoard():
                             self.pos[dest[0] + dr][dest[1] + ds] = self.pos[origin[0]][origin[1]]
                             self.pos[dest[0]][dest[1]] = None
                             self.pos[origin[0]][origin[1]] = None
+                            if ((dest[0] + dr == self.height - 1) and self.pos[dest[0] + dr][dest[1] + ds][P_COL] == 0) or ((dest[0] + dr == 0) and self.pos[dest[0] + dr][dest[1] + ds][P_COL] == 1):
+                                print "King me!"
+                                self.pos[dest[0] + dX][dest[1] + dY][P_KING] = True
                 else:
                     print "moving..."
                     self.pos[dest[0]][dest[1]] = self.pos[origin[0]][origin[1]]
                     self.pos[origin[0]][origin[1]] = None
                     #Move piece
+                    if ((dest[0] == self.height - 1) and self.pos[dest[0]][dest[1]][P_COL] == 0) or ((dest[0] == 0) and self.pos[dest[0] + dr][dest[1] + ds][P_COL] == 1):
+                        print "King me!"
+                        self.pos[dest[0] + dX][dest[1] + dY][P_KING] = True
             else:
                 print "You can't move in that direction!"
         else:
@@ -105,7 +111,7 @@ class NewBoard():
                     else:
                         print "X",
                 else:
-                    print "·",
+                    print "Â·",
             print "\n",
             if row == 0:
                 print "|",
