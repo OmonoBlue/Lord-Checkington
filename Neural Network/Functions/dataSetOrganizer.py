@@ -22,7 +22,7 @@ def dataSetOrgan():
             for ayy in range (11):
                 del data[count]
 
-##    data = filter(str.strip, data)
+    data = filter(str.strip, data)
 ##    for i in range (len(data)-1):
 ##        count = 0
 ##
