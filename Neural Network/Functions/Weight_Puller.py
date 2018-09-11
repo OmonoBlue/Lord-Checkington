@@ -29,7 +29,7 @@ def weightPuller():
 
                 
                 for i in range (0, int(nodes[layer+1])):
-                    weightList[layer][node].insert(i, int(weight.readline()))
+                    weightList[layer][node].insert(i, float(weight.readline()))
 
                 weight.readline()
 

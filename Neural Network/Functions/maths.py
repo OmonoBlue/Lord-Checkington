@@ -46,9 +46,4 @@ def weightDiff(errorList, weight):
     return weight
 
 
-weight = [[[0.497566160922, -0.807479684177]]]
-errorList = [1,1]
 
-weight = weightDiff(errorList, weight)
-
-print weight
