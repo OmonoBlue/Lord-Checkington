@@ -64,26 +64,26 @@ class NewBoard():
     def Move(self, originY, originX, dirY, dirX): #dirX stands for direction row, dirY stands for direction space (y and x respectively)
         if abs(dirX) != 1 or abs(dirY) != 1:
             print "Can only move 1 space in each direction!"
+            return False
         dest = (originX + dirX,originY + dirY)
-        print dest, "is the destination"
-        
-        print self.pos[originX][originY], "has been selected"
         
         if self.pos[originX][originY] != None: #Check if a playable piece has been selected
-            print "piece detected"
             
             #Check if playable piece is moveable in chosen direction
             if (self.pos[originX][originY][P_COL] == 0 and dirX == 1) or (self.pos[originX][originY][P_COL] == 1 and dirX == -1) or self.pos[originX][originY][P_KING] == True:
                 
                 if (dest[0] > self.width - 1 or dest[0] < 0) or (dest[1] > self.height - 1 or dest[1] < 0): #check if the piece is going to move out of bounds
                     print "can't move, piece out of bounds"
+                    return False
                 elif self.pos[dest[0]][dest[1]] != None: #if the destination is not clear...
                     print "destination blocked..."
                     if self.pos[dest[0]][dest[1]][P_COL] == self.pos[originX][originY][P_COL]: #check if the space is occupied by your own colour
                         print "can't move, piece occupied by own colour"
+                        return False
                     else: #If piece is enemy color...
                         if self.pos[dest[0] + dirX][dest[1] + dirY] != None: #check if piece is capturable
                             print "can't move, capture blocked"
+                            return False
                         else:
                             #Capture piece
                             print "capturing..."
@@ -103,8 +103,10 @@ class NewBoard():
                         self.pos[dest[0] + dirX][dest[1] + dirY][P_KING] = True
             else:
                 print "You can't move in that direction!"
+                return False
         else:
             print "Origin must be an existing piece"
+            return False
                             
         
     #print board
@@ -119,7 +121,7 @@ class NewBoard():
                     else:
                         print "X",
                 else:
-                    print "Â·",
+                    print "·",
             print "\n",
             if row == 0:
                 print "|",
@@ -163,4 +165,48 @@ class NewBoard():
 
     
 board = NewBoard(8, 8)
-board.Draw()
+
+done = False
+
+while not done:
+
+    board.Draw()
+
+    if board.turn == 0:
+        print "\nIt is white's turn. What piece do you want to move? (x y)"
+    else:
+        print "\nIt is black's turn. What piece do you want to move? (x y)"
+
+    
+    while True:
+        pMove = [0, 0, 0, 0]
+        try:
+            
+            origin = map(int, raw_input("Piece Coordinate: ").split())
+            print origin
+            
+            if board.pos[origin[1]][origin[0]][P_COL] != board.turn:
+                print "You can't move that piece, it's not your turn!"
+                continue
+            else:
+                pMove[0] = origin[0]
+                pMove[1] = origin[1]
+                print pMove
+
+                
+        except:
+            print "Err! Please enter a valid x coordinate and y coordinate seperated by a space"
+            continue
+
+        print "\nWhat direction do you want to move? UP/DOWN LEFT/RIGHT)"
+    
+        try:
+            direction = map(str, raw_input("Destination: ").split())
+            if direction[0].lower() != "up" or direction[0].lower() != "down" or direction[1].lower() != "left" or direction[1].lower() != "right":
+                print "Error! Please enter y direction (up/down), and x direction (left/right), seperated by a space"
+                continue
+            break
+        except:
+            print "Error! Please enter y direction (up/down) and x direction (left/right) seperated by a space"
+
+
