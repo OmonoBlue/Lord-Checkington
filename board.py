@@ -5,6 +5,12 @@ import math
 P_COL = 0
 P_KING = 1
 
+UP = 1
+DOWN = -1
+LEFT = -1
+RIGHT = 1
+
+
 class NewBoard():
 
     # Initial Setup
@@ -113,7 +119,7 @@ class NewBoard():
                     else:
                         print "X",
                 else:
-                    print "·",
+                    print "Â·",
             print "\n",
             if row == 0:
                 print "|",
