@@ -1,5 +1,6 @@
 
 import math
+import os
 
 #some stuff to make code better and ez reads
 P_COL = 0
@@ -164,29 +165,32 @@ class NewBoard():
                             
 
     
-board = NewBoard(8, 8)
-
+board = NewBoard(8, 8) #Create the standard 8 by 8 board
 done = False
 
+# Turn handling woo!
 while not done:
+    
+    print "\n" * 100 # clear screen
+    board.Draw() #draw board
 
-    board.Draw()
-
+    #prompt appropriate player to select a piece to move
     if board.turn == 0:
         print "\nIt is white's turn. What piece do you want to move? (x y)"
     else:
         print "\nIt is black's turn. What piece do you want to move? (x y)"
 
-    
-    while True:
-        pMove = [0, 0, 0, 0]
+    # this loop will keep running until the player makes a valid move
+    while True: 
+        
+        pMove = [0, 0, 0, 0] # variable used to store player's move
+        
         try:
             
-            origin = map(int, raw_input("Piece Coordinate: ").split())
-            print origin
+            origin = map(int, raw_input("Piece Coordinate: ").split()) #Prompt player for origin piece coordinate
             
             if board.pos[origin[1]][origin[0]][P_COL] != board.turn:
-                print "You can't move that piece, it's not your turn!"
+                print "You can't move that piece, it's not yours!"
                 continue
             else:
                 pMove[0] = origin[0]
@@ -201,12 +205,31 @@ while not done:
         print "\nWhat direction do you want to move? UP/DOWN LEFT/RIGHT)"
     
         try:
-            direction = map(str, raw_input("Destination: ").split())
-            if direction[0].lower() != "up" or direction[0].lower() != "down" or direction[1].lower() != "left" or direction[1].lower() != "right":
-                print "Error! Please enter y direction (up/down), and x direction (left/right), seperated by a space"
+            direction = map(str, raw_input("Destination: ").lower().split())
+            print direction
+            if direction[0] == "up":
+                pMove[2] = UP
+            elif direction[0] == "down":
+                pMove[2] = DOWN
+            else:
+                print "Please enter a valid direction for the first argument"
                 continue
-            break
+
+            if direction[1] == "left":
+                pMove[3] = LEFT
+            elif direction[1] == "right":
+                pMove[3] = RIGHT
+            else:
+                print "Please enter a valid direction for the second argument"
+                continue
         except:
-            print "Error! Please enter y direction (up/down) and x direction (left/right) seperated by a space"
+            print "Error NANI! Please enter y direction (up/down) and x direction (left/right) seperated by a space"
+
+        if board.Move(pMove[0], pMove[1], pMove[3], pMove[2]) == False:
+            continue
+        else:
+            board.turn = (board.turn - 1) * -1
+            break
+            
 
 
