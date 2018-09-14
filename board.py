@@ -29,7 +29,7 @@ class NewBoard():
     def __init__(self, width, height):
 
         # Setup empty board
-        self.pos = [[None for x in range(width)] for y in range(height)]
+        self.pos = [[None for x in range(width - 1, -1, -1)] for y in range(height)]
 
         self.width = width
         self.height = height
@@ -151,7 +151,7 @@ class NewBoard():
             order = 1
             
         for row in range(len(self.pos)):
-            for space in range(len(self.pos[row])):
+            for space in range(len(self.pos[row]) - 1, -1 ,-1):
                 
                 mode = row % 2
                 
@@ -179,10 +179,12 @@ class NewBoard():
 board = NewBoard(8, 8) #Create the standard 8 by 8 board
 done = False
 
+
 # Turn handling woo!
 while not done:
     
     print "\n" * 100 # clear screen
+    print board.GetStats(False)
     board.Draw() #draw board
 
     #prompt appropriate player to select a piece to move
