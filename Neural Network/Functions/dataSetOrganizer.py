@@ -23,19 +23,92 @@ def dataSetOrgan():
                 del data[count]
 
     data = filter(str.strip, data)
-##    for i in range (len(data)-1):
-##        count = 0
-##
-##        data.insert(i, data[i].split(' '))
-##        for move in range (len(data[i])/3):
-##            if count == 0:
-##                del data[i][move]
-##            count += 1
-##            if count == 3:
-##                count = 0
+    practiceData.close()
+
+    for i in range (len(data)):
+        data[i] = data[i].replace('.',' ')
+        data[i] = data[i].replace('  ',' ')
+        data[i] = data[i].replace('x', '-')
+        data[i] = data[i].replace('\n',' ')
+        data[i] = data[i].split(' ')
+        
+
+    for i in range (len(data)):
+        for move in range (len(data[i])):
+            try:
+                if "-" not in data[i][move]:
+                    del data[i][move]
+                dashCounter = 0
+                for char in range (len(data[i][move])):
+                    if data[i][move][char] == "-":
+                        dashCounter += 1
+                    if dashCounter >= 2:
+                        data[i][move] = data[i][move][:char]
+                                   
+##                if "\n" in data[i][move]:
+##                    gayLineSkipper = 1
+##                if len(data[i][move]) > 5:
+##                    if gayLineSkipper == 1:
+##                        data[i][move] = data[i][move][:5] + "\n"
+##                    if gayLineSkipper == 0:
+##                        data[i][move] = data[i][move][:5]
+            except (IndexError):
+                pass
+
+    for i in range(len(data)):
+        del data[i][len(data[i])-1]
+    matchRecorder(data)
+
+
+
+
+def matchRecorder(data):
+    if os.path.lexists('Games') == False:
+        os.makedirs('Games')
+
+    for i in range (len(data)):
+        moveW = 0
+        fileStr = 'Game%s.txt' %(i)
+        gameFile = open(os.path.join('Games', fileStr), 'w')
+        for move in range (1, len(data[i])-1):
+            moveW += 1
+            if moveW == 2:
+                try:
+                    data[i][move] = data[i][move].split('-')
+                    data[i][move][0] = str((int(data[i][move][0]) -33) *(-1))
+                    data[i][move][1] = str((int(data[i][move][1]) -33) *(-1))
+                    dataSave =  ''.join(data[i][move][0] + '-' + data[i][move][1])
+                    data[i][move].pop()
+                    data[i][move] = dataSave
+                    moveW = 0
+                except:
+                    pass
+            gameFile.write(str(data[i][move]) + ' ')
+        gameFile.close()
+
+    
+        
+def dataConverter():
+    data = []
+    count = 0
+    while True:
+        try:
+            dataFile = open(os.path.join('Games', 'Game%s.txt' %(count)), 'r')
+            dataFileExc = dataFile.read()
+            data.insert(count, dataFileExc)
+            count += 1
+        except (IOError, IndexError):
+            break
 
     for i in data:
         print i
+        
+        
+        
+    
+dataSetOrgan()
+
+        
             
 ##    for i in practiceData:
 ##        count += 1
@@ -43,4 +116,3 @@ def dataSetOrgan():
 ##        
 ##        if count == 100:
 ##            break
-dataSetOrgan()
