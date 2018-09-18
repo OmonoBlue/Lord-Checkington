@@ -38,24 +38,14 @@ conversionList = {
     32: [1, 7]
     }
 
-    
-for move in range(len(Data) - 1):
-    if "-" not in Data[move]:
-        del Data[move]
-print Data
+corList = conversionList.items()
 
-newMove = []
-for move in range(len(Data) - 1):
-    origin = int(Data[move].split('-')[0])
-    dest = int(Data[move].split('-')[1])
+def numToCor(num):
+    return conversionList(num)
 
-    print conversionList[origin]
-    newMove.append([conversionList[origin][0], conversionList[origin][1], conversionList[origin][0] - conversionList[dest][0], conversionList[origin][1] - conversionList[dest][1]])
-    
+def corToNum(cor1, cor2):
 
-newFile = open('Reorginized Game.txt', 'w')
+    for i in range(len(corList)):
+        if corList[i][1] == [cor1, cor2]:
+            return i
 
-newFile.write(str(newMove))
-
-
-newFile.close()
