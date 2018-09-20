@@ -34,17 +34,23 @@ def dataSetOrgan():
         
 
     for i in range (len(data)):
+        moveCount = 0
         for move in range (len(data[i])):
             try:
+
                 if "-" not in data[i][move]:
                     del data[i][move]
-                dashCounter = 0
-                for char in range (len(data[i][move])):
-                    if data[i][move][char] == "-":
-                        dashCounter += 1
-                    if dashCounter >= 2:
-                        data[i][move] = data[i][move][:char]
-                                   
+                    moveCount += 1
+                else:
+                    dashCounter = 0
+                    for char in range (len(data[i][move - moveCount])):
+                        if data[i][move - moveCount][char] == "-":
+                            dashCounter += 1
+                        if dashCounter >= 2:
+                            data[i][move] = data[i][move - moveCount][:char]
+                    fullMove = data[i][move - moveCount].split('-')
+                    data[i][move - moveCount] = [data[i][move - moveCount], fullMove]
+                    data[i][move - moveCount][0] = data[i][move - moveCount][0].split('-')
 ##                if "\n" in data[i][move]:
 ##                    gayLineSkipper = 1
 ##                if len(data[i][move]) > 5:
@@ -71,18 +77,18 @@ def matchRecorder(data):
         fileStr = 'Game%s.txt' %(i)
         gameFile = open(os.path.join('Games', fileStr), 'w')
         for move in range (1, len(data[i])-1):
-            moveW += 1
-            if moveW == 2:
-                try:
-                    data[i][move] = data[i][move].split('-')
-                    data[i][move][0] = str((int(data[i][move][0]) -33) *(-1))
-                    data[i][move][1] = str((int(data[i][move][1]) -33) *(-1))
-                    dataSave =  ''.join(data[i][move][0] + '-' + data[i][move][1])
-                    data[i][move].pop()
-                    data[i][move] = dataSave
-                    moveW = 0
-                except:
-                    pass
+##            moveW += 1
+##            if moveW == 2:
+##                try:
+##                    data[i][move] = data[i][move].split('-')
+##                    data[i][move][0] = str((int(data[i][move][0]) -33) *(-1))
+##                    data[i][move][1] = str((int(data[i][move][1]) -33) *(-1))
+##                    dataSave =  ''.join(data[i][move][0] + '-' + data[i][move][1])
+##                    data[i][move].pop()
+##                    data[i][move] = dataSave
+##                    moveW = 0
+##                except:
+##                    pass
             gameFile.write(str(data[i][move]) + ' ')
         gameFile.close()
 
