@@ -35,7 +35,7 @@ def dataSetOrgan():
 
     for i in range (len(data)):
         moveCount = 0
-        for move in range (len(data[i])):
+        for move in range (len(data[i])+ 1000):
             try:
 
                 if "-" not in data[i][move]:
@@ -43,6 +43,7 @@ def dataSetOrgan():
                     moveCount += 1
                 else:
                     dashCounter = 0
+                    print data[i][move]
                     for char in range (len(data[i][move - moveCount])):
                         if data[i][move - moveCount][char] == "-":
                             dashCounter += 1
