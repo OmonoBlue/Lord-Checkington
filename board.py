@@ -2,6 +2,7 @@
 import math
 import os
 import pickle
+from pygame import *
 
 #some stuff to make code better and ez reads
 P_COL = 0
@@ -251,7 +252,7 @@ class NewBoard():
     
 
     
-board = NewBoard.Load("Multi Hop Test 1.bin") #Create the standard 8 by 8 board
+board = NewBoard.Load("Board Test 2.bin") #Create the standard 8 by 8 board
 done = False
 
 
