@@ -1,6 +1,7 @@
 
 import math
 import os
+import pickle
 
 #some stuff to make code better and ez reads
 P_COL = 0
@@ -21,7 +22,7 @@ SPACE_ABC = {
     6: "g",
     7: "h",
     }
-    
+
 
 class NewBoard():
 
@@ -29,7 +30,9 @@ class NewBoard():
     def __init__(self, width, height):
 
         # Setup empty board
-        self.pos = [[None for x in range(width - 1, -1, -1)] for y in range(height)]
+        self.pos = [None] * width
+        for column in range(len(self.pos)):
+            self.pos[column] = [None] * height
 
         self.width = width
         self.height = height
@@ -41,17 +44,17 @@ class NewBoard():
         totalw = round(((height - 2) * width) / 4)
         totalb = totalw
         
-        for row in range(len(self.pos)):
+        for row in range(height):
             # check if row is odd number or even number. Will help arrange board layout.
             mode = row % 2
 
             # odd row, put pieces on odd spaces. even row, put pieces on even spaces.
-            for space in range(len(self.pos[row])):
+            for space in range(width):
                     
                 if space % 2 == mode:
 
                     #pieces are set up like this: self.pos[row][space](color {0 = white / 1 = black}, king {True/False})
-                    self.pos[row][space] = [0, False]
+                    self.pos[space][row] = [0, False]
                     totalw -= 1
 
 
@@ -61,86 +64,139 @@ class NewBoard():
 
             
         #doing same thing, but for black pieces 
-        for row in range(len(self.pos) -1, -1, -1):
+        for row in range(height -1, -1, -1):
 
             mode = row % 2
             
-            for space in range(len(self.pos[row]) -1, -1, -1):
+            for space in range(width -1, -1, -1):
                 if space % 2 == mode:
-                    self.pos[row][space] = (1, False)
+                    self.pos[space][row] = (1, False)
                     totalb -= 1
             
             if totalb < 1:
                 break
-
-    def Move(self, originY, originX, dirY, dirX): #dirX stands for direction row, dirY stands for direction space (y and x respectively)
-        if abs(dirX) != 1 or abs(dirY) != 1:
-            print "Can only move 1 space in each direction!"
-            return False
-        dest = (originX + dirX,originY + dirY)
+    
+    def CheckMove(self, oriCor, direction):
         
-        if self.pos[originX][originY] != None: #Check if a playable piece has been selected
-            
-            #Check if playable piece is moveable in chosen direction
-            if (self.pos[originX][originY][P_COL] == 0 and dirX == 1) or (self.pos[originX][originY][P_COL] == 1 and dirX == -1) or self.pos[originX][originY][P_KING] == True:
-                
-                if (dest[0] > self.width - 1 or dest[0] < 0) or (dest[1] > self.height - 1 or dest[1] < 0): #check if the piece is going to move out of bounds
-                    print "can't move, piece out of bounds"
-                    return False
-                elif self.pos[dest[0]][dest[1]] != None: #if the destination is not clear...
-                    print "destination blocked..."
-                    if self.pos[dest[0]][dest[1]][P_COL] == self.pos[originX][originY][P_COL]: #check if the space is occupied by your own colour
-                        print "can't move, piece occupied by own colour"
-                        return False
-                    else: #If piece is enemy color...
-                        if self.pos[dest[0] + dirX][dest[1] + dirY] != None: #check if piece is capturable
-                            print "can't move, capture blocked"
-                            return False
-                        else:
-                            #Capture piece
-                            print "capturing..."
-                            self.pos[dest[0] + dirX][dest[1] + dirY] = self.pos[originX][originY]
-                            self.pos[dest[0]][dest[1]] = None
-                            self.pos[originX][originY] = None
-                            if ((dest[0] + dirX == self.height - 1) and self.pos[dest[0] + dirX][dest[1] + dirY][P_COL] == 0) or ((dest[0] + dirX == 0) and self.pos[dest[0] + dirX][dest[1] + dirY][P_COL] == 1):
-                                print "King me!"
-                                self.pos[dest[0] + dirX][dest[1] + dirY][P_KING] = True
-                else:
-                    print "moving..."
-                    self.pos[dest[0]][dest[1]] = self.pos[originX][originY]
-                    self.pos[originX][originY] = None
-                    #Move piece
-                    if ((dest[0] == self.height - 1) and self.pos[dest[0]][dest[1]][P_COL] == 0) or ((dest[0] == 0) and self.pos[dest[0] + dirX][dest[1] + dirY][P_COL] == 1):
-                        print "King me!"
-                        self.pos[dest[0] + dirX][dest[1] + dirY][P_KING] = True
-            else:
-                print "You can't move in that direction!"
-                return False
-        else:
-            print "Origin must be an existing piece"
+        origin = self.pos[oriCor[0]][oriCor[1]]
+        destination = self.pos[oriCor[0] + direction[0]][oriCor[1] + direction[1]]
+
+        #Check if there is a moveable piece
+        if origin == None:
+            print "No piece in origin"
             return False
-                            
+        
+        elif ((origin[P_COL] == 0 and direction[1] <= -1) or (origin[P_COL] == 1 and direction[1] >= 1)) and origin[P_KING] == False:
+            print "Can't move in that direction"
+            return False
+
+        elif destination != None:
+            if destination[P_COL] == origin[P_COL]:
+                print "Can't capture own colour!"
+                return False
+            elif (oriCor[0] + direction[0] * 2 > self.width + 1) or (oriCor[1] + direction[1] * 2  > self.height + 1) or (oriCor[0] + direction[0] * 2 < 0) or (oriCor[1] + direction[1] * 2  < 0):
+                print "Can't go out of bounds!"
+                return False
+                
+            elif self.pos[oriCor[0] + direction[0] * 2][oriCor[1] + direction[1] * 2] != None:
+                print "Capture Blocked"
+                return False
+            else:
+                print "Capture Possible"
+                return "Capture"
+        else:
+            return True
+
+        
+    def Move(self, origin, moveList):         
+        if isinstance(origin, tuple) and len(origin) == 2:
+
+            if isinstance(moveList, tuple):
+
+                if len(moveList) == 2:
+                    if isinstance(moveList[0], tuple):
+                        isSingleMove = False
+                    else:
+                        isSingleMove = True
+                elif len(moveList) < 2:
+                    print "Error! Move must be either one or multiple co-ordinates!"
+                    return
+                else:
+                    isSingleMove = False
+            else:
+                print "Error! Move must be a list!"
+                return
+        else:
+            print "Error, origin must be a co-ordiante"
+            return
+
+        print "isSingleMove:", isSingleMove
+        if isSingleMove:
+            direction = ( (moveList[0] - origin[0]) / abs(moveList[0] - origin[0]) , (moveList[1] - origin[1]) / abs(moveList[1] - origin[1]) )
+
+            print "direction", direction
+            if self.CheckMove(origin, direction):
+                self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
+                self.pos[origin[0]][origin[1]] = None
+            elif self.CheckMove(origin, direction) == False:
+                print "Can't move there!"
+                return
+            else:
+                self.pos[moveList[0] + direction[0] * 2][moveList[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
+                self.pos[moveList[0] + direction[0]][moveList[1] + direction[1]] = None
+                self.pos[origin[0]][origin[1]] = None
+        else:
+            newOrigin = origin
+            for move in moveList:
+                direction = ( (move[0] - newOrigin[0]) / abs(move[0] - newOrigin[0]) , (move[1] - newOrigin[1]) / abs(move[1] - newOrigin[1]) )
+                if self.CheckMove(newOrigin, direction) == "Capture":
+                    self.pos[move[0]][move[1]] = self.pos[newOrigin[0]][newOrigin[1]]
+                    self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
+                    self.pos[newOrigin[0]][newOrigin[1]] = None
+                    newOrigin = (move[0], move[1])
+
+                else:
+                    print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."
+                    return
+
+                
         
     #print board
-    def Draw(self):
-        print "\n"
-        for row in range(len(self.pos) - 1, -1, -1):
-            print row,
-            for space in range(len(self.pos[row])):
-                if self.pos[row][space] != None:
-                    if self.pos[row][space][P_COL] == 0:
-                        print "O",
-                    else:
-                        print "X",
-                else:
-                    print "·",
-            print "\n",
-            if row == 0:
-                print "|",
-                for space in range(len(self.pos[row])):
-                    print SPACE_ABC[space],
-                print "\n"
+    def Draw(self, highlight = None):
+        if highlight != None:
+            if type(highlight) == list or type(highlight) == tuple:
+                highlightSpace = highlight
+            else:
+                print "Error! Highlight has to be a coordinate"
+                highlightSpace = None
+        else:
+            highlightSpace = None
 
+        
+        for row in range(self.height -1, -1, -1):
+            print row,
+            
+            for space in range(self.width):
+                
+                if self.pos[space][row] != None:
+                    if self.pos[space][row][P_COL] == 0:
+                        if highlightSpace != None and self.pos[space][row] == highlightSpace:
+                            print "[o]",
+                        else:
+                            print "O",
+                    elif self.pos[space][row][P_COL] == 1:
+                        if highlightSpace != None and self.pos[space][row] == highlightSpace:
+                            print "[x]",
+                        else:
+                            print "X",
+                else:
+                    print "-",
+            print ""
+
+        print " ",
+        for num in range(len(SPACE_ABC)):
+            print SPACE_ABC[num],
+            
           
     def GetStats(self, flipped):
         statList = []
@@ -173,12 +229,33 @@ class NewBoard():
                             else:
                                 statList.append(1 * order)
         return statList
-                            
+
+    @staticmethod
+    def Save(board, filename = None):
+        if filename == None:
+            name = board.Name
+        else:
+            name = filename
+        savefile = open(os.path.join('BoardSaves', name), 'w')
+        pickle.dump(board, savefile)
+        savefile.close()
+        
+
+    @staticmethod
+    def Load(filename):
+        savefile = open(os.path.join('BoardSaves', filename), 'r')
+        newBoard = pickle.load(savefile)
+        savefile.close()
+        return newBoard
 
     
-board = NewBoard(8, 8) #Create the standard 8 by 8 board
+
+    
+board = NewBoard.Load("Multi Hop Test 1.bin") #Create the standard 8 by 8 board
 done = False
 
+
+board.Draw()
 
 # Turn handling woo!
 ##while not done:
