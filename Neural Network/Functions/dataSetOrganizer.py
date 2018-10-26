@@ -38,17 +38,21 @@ def dataSetOrgan():
         for move in range (len(data[i])+ 1000):
             try:
 
-                if "-" not in data[i][move]:
-                    del data[i][move]
+                if "-" not in data[i][move- moveCount]:
+                    del data[i][move- moveCount]
                     moveCount += 1
                 else:
                     dashCounter = 0
-                    print data[i][move]
+                    #print data[i][move]
+                    charCount = 0
                     for char in range (len(data[i][move - moveCount])):
-                        if data[i][move - moveCount][char] == "-":
+                        
+                        if data[i][move - moveCount][char - charCount] == "-":
                             dashCounter += 1
+                        
                         if dashCounter >= 2:
-                            data[i][move] = data[i][move - moveCount][:char]
+                            data[i][move- moveCount] = data[i][move - moveCount][:char - charCount]
+                            charCount += 1
                     fullMove = data[i][move - moveCount].split('-')
                     data[i][move - moveCount] = [data[i][move - moveCount], fullMove]
                     data[i][move - moveCount][0] = data[i][move - moveCount][0].split('-')
@@ -107,8 +111,7 @@ def dataConverter():
         except (IOError, IndexError):
             break
 
-    for i in data:
-        print i
+
         
         
         
