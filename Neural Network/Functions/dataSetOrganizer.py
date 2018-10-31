@@ -36,22 +36,42 @@ def dataSetOrgan():
     for i in range (len(data)):
         moveCount = 0
         for move in range (len(data[i])+ 1000):
+            helpme = 0
+            
             try:
-
-                if "-" not in data[i][move]:
-                    del data[i][move]
+##                if data[i][move-moveCount] == "0-1" or data[i][move-moveCount] =="1-0" or data[i][move-moveCount] =="1/2-1/2":
+##                    del data[i][move- moveCount]
+##                    moveCount += 1
+##                    pass
+                if "-" not in data[i][move- moveCount]:
+                    del data[i][move- moveCount]
                     moveCount += 1
                 else:
                     dashCounter = 0
-                    print data[i][move]
+                    #print data[i][move]
+                    charCount = 0
+
+                    if helpme == 0:
+                        fullMove = data[i][move - moveCount].split('-')
+                        helpme = 1
+
+        
                     for char in range (len(data[i][move - moveCount])):
-                        if data[i][move - moveCount][char] == "-":
-                            dashCounter += 1
-                        if dashCounter >= 2:
-                            data[i][move] = data[i][move - moveCount][:char]
-                    fullMove = data[i][move - moveCount].split('-')
-                    data[i][move - moveCount] = [data[i][move - moveCount], fullMove]
-                    data[i][move - moveCount][0] = data[i][move - moveCount][0].split('-')
+                        try:
+                            if data[i][move - moveCount][char - charCount] == "-":
+                                dashCounter += 1
+                        
+                            if dashCounter >= 2:
+                                data[i][move- moveCount] = data[i][move - moveCount][:char - charCount]
+                                charCount += 1
+                        except (IndexError):
+                            break
+        
+                    data[i][move - moveCount] = [data[i][move - moveCount].split('-'), fullMove]
+                    
+                    
+
+                    
 ##                if "\n" in data[i][move]:
 ##                    gayLineSkipper = 1
 ##                if len(data[i][move]) > 5:
@@ -59,17 +79,20 @@ def dataSetOrgan():
 ##                        data[i][move] = data[i][move][:5] + "\n"
 ##                    if gayLineSkipper == 0:
 ##                        data[i][move] = data[i][move][:5]
+            
             except (IndexError):
                 pass
 
     for i in range(len(data)):
         del data[i][len(data[i])-1]
+    
     matchRecorder(data)
 
 
 
 
 def matchRecorder(data):
+    print data[1]
     if os.path.lexists('Games') == False:
         os.makedirs('Games')
 
@@ -77,7 +100,7 @@ def matchRecorder(data):
         moveW = 0
         fileStr = 'Game%s.txt' %(i)
         gameFile = open(os.path.join('Games', fileStr), 'w')
-        for move in range (1, len(data[i])-1):
+        for move in range (len(data[i])):
 ##            moveW += 1
 ##            if moveW == 2:
 ##                try:
@@ -90,6 +113,7 @@ def matchRecorder(data):
 ##                    moveW = 0
 ##                except:
 ##                    pass
+            
             gameFile.write(str(data[i][move]) + ' ')
         gameFile.close()
 
@@ -107,8 +131,7 @@ def dataConverter():
         except (IOError, IndexError):
             break
 
-    for i in data:
-        print i
+
         
         
         
