@@ -41,7 +41,7 @@ conversionList = {
 corList = conversionList.items()
 
 def numToCor(num):
-    return conversionList(num)
+    return conversionList[num]
 
 def corToNum(cor1, cor2):
 
@@ -49,3 +49,10 @@ def corToNum(cor1, cor2):
         if corList[i][1] == [cor1, cor2]:
             return i
 
+def spaceToDir(org, dest):
+    origin = numToCor(org)
+    destination = numToCor(dest)
+
+    direction = [(destination[0] - origin[0]) / abs(destination[0] - origin[0]), (destination[1] - origin[1]) / abs(destination[1] - origin[1])]
+
+    return direction
