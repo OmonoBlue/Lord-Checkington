@@ -94,7 +94,6 @@ def dataSetOrgan():
 
 
 def matchRecorder(data):
-    print data[1]
     if os.path.lexists('Games') == False:
         os.makedirs('Games')
 
@@ -136,11 +135,7 @@ def dataConverter():
 
 
         
-        
-        
-    
-list1 = dataSetOrgan()
-matchRecorder(list1)
+
 
         
             
