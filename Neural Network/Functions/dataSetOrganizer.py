@@ -68,6 +68,7 @@ def dataSetOrgan():
                             break
         
                     data[i][move - moveCount] = [data[i][move - moveCount].split('-'), fullMove]
+
                     
                     
 
@@ -85,8 +86,9 @@ def dataSetOrgan():
 
     for i in range(len(data)):
         del data[i][len(data[i])-1]
+
+    return data
     
-    matchRecorder(data)
 
 
 
@@ -116,6 +118,7 @@ def matchRecorder(data):
             
             gameFile.write(str(data[i][move]) + ' ')
         gameFile.close()
+    print "Done saving"
 
     
         
@@ -136,7 +139,8 @@ def dataConverter():
         
         
     
-dataSetOrgan()
+list1 = dataSetOrgan()
+matchRecorder(list1)
 
         
             

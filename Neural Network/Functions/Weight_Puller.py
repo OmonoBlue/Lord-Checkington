@@ -12,6 +12,8 @@ def weightPuller():
         os.makedirs('WeightSaves')
     try:
         weight = open(os.path.join('WeightSaves','latest_weight.txt'), 'r')
+        games = int(weight.readline())
+
         layerNo = int(weight.readline())
         weight.readline()
 
@@ -61,8 +63,8 @@ def weightPuller():
                 for i in range (0, int(nodes[layer+1])):
                     weight[layer][node].insert(i, initWeight(layer))
 
-        networkRecorder(weight,nodes)
-        return (weight, nodes)
-    return (weightList, nodes)
+        networkRecorder(weight,nodes,0)
+        return (weight, nodes, 0)
+    return (weightList, nodes, games)
     
 

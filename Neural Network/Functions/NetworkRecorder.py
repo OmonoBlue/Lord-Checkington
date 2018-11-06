@@ -1,10 +1,10 @@
 import os
 
 
-def networkRecorder(weight, nodes):
+def networkRecorder(weight, nodes,games):
     networkValues = open(os.path.join('WeightSaves', 'latest_weight.txt'), 'w')
 
-
+    networkValues.write(str(games) + '\n')
 
     networkValues.write(str(len(weight)) + '\n\n')
 
