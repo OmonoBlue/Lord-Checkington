@@ -109,7 +109,18 @@ class NewBoard():
         else:
             return True
 
-        
+    def GetValidMoves(self, col):
+
+        if isinstance(col, int) == False:
+            try:
+                colour = int(col)
+            except:
+                print "Error! Valid colour must be provided (0 is red, 1 is black)"
+                return False
+        elif col < 0 or col > 2:
+            return False
+
+            
     def Move(self, origin, moveList):         
         if isinstance(origin, tuple) and len(origin) == 2:
 
@@ -140,7 +151,7 @@ class NewBoard():
             if self.CheckMove(origin, direction):
                 self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
                 self.pos[origin[0]][origin[1]] = None
-                moveNum += 1
+                self.moveNum += 1
                 
             elif self.CheckMove(origin, direction) == False:
                 print "Can't move there!"
@@ -149,7 +160,7 @@ class NewBoard():
                 self.pos[moveList[0] + direction[0] * 2][moveList[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
                 self.pos[moveList[0] + direction[0]][moveList[1] + direction[1]] = None
                 self.pos[origin[0]][origin[1]] = None
-                moveNum += 1
+                self.moveNum += 1
         else:
             newOrigin = origin
             for move in moveList:
@@ -159,7 +170,7 @@ class NewBoard():
                     self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
                     self.pos[newOrigin[0]][newOrigin[1]] = None
                     newOrigin = (move[0], move[1])
-                    moveNum += 1
+                    self.moveNum += 1
 
                 else:
                     print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."

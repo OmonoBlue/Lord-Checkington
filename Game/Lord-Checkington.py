@@ -36,6 +36,8 @@ borderW = 5
 borderGap = 20
 spaceW = (monitorSpecs.current_h - (borderGap * 2)) / game.height
 boardW = spaceW * game.height
+boardCor = [(monitorSpecs.current_w / 2) - (boardW / 2), (monitorSpecs.current_h / 2) - (boardW / 2)]
+
 
 #Load Board Sprites
 spritePath = os.path.join('Assets', 'Sprites')
@@ -52,12 +54,15 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-        elif event.type == KEYDOWN and event.key == K_ESCAPE:
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
                 done = True
-    
+            elif event.key == K_UP:
+                game.Move((0, 2), (1, 3))
+
     screen.fill(BROWN)
 
-    pygame.draw.rect(screen, MAROON, [(monitorSpecs.current_w / 2) - (boardW / 2), (monitorSpecs.current_h / 2) - (boardW / 2), boardW, boardW])
+    pygame.draw.rect(screen, MAROON, [boardCor[0], boardCor[1], boardW, boardW])
     
     for row in range(len(game.pos[0]) - 1, -1, -1):
         rowMode = row % 2
@@ -81,10 +86,11 @@ while not done:
                             screen.blit(bKingSprite, [spaceX, spaceY])
                         else:
                             screen.blit(bNormalSprite, [spaceX, spaceY])
+                            
                         
             
 
-    pygame.draw.rect(screen, GREY, [(monitorSpecs.current_w / 2) - (boardW / 2) - (borderW / 2), (monitorSpecs.current_h / 2) - (boardW / 2) - (borderW / 2), boardW + borderW, boardW + borderW], borderW)
+    pygame.draw.rect(screen, GREY, [boardCor[0] - (borderW / 2), boardCor[1] - (borderW / 2), boardW + borderW, boardW + borderW], borderW)
     
     pygame.display.flip()
     clock.tick(60)
