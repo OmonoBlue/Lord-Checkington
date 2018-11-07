@@ -4,7 +4,7 @@ import importlib
 importlib.import_module('Functions')
 from Functions import Weight_Puller, maths, NetworkRecorder, dataSetOrganizer, converter, Learning_algorithm
 
-def neuralNetworkLearning(values,gameEnd,moveNum):
+def neuralNetworkLearning(values,gameEnd,moveNum,nodes,nodesList,weights,actual,moves,game):
 
 
     for layer in range (len(nodes)-1):
@@ -71,5 +71,5 @@ def neuralNetInit():
 
 list1 = [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
-neuralNetworkLearning(list1,False,0)
+
 
