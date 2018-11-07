@@ -1,7 +1,6 @@
 
 import os
-import importlib
-importlib.import_module('Neural_Network')
+from MainNetwork import neuralNetworkLearning, neuralNetInit
 
-from Neural_Network import MainNetwork
+
 
