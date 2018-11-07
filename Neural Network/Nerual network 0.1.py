@@ -4,34 +4,13 @@ import importlib
 importlib.import_module('Functions')
 from Functions import Weight_Puller, maths, NetworkRecorder, dataSetOrganizer, converter, Learning_algorithm
 
-def neuralNetworkLearning(values,gameEnd, moveNum, ):
-    if moveNum = 0:
-        weights = []
-        nodes = []
-        error = []
-    
+def neuralNetworkLearning(values,gameEnd,moveNum):
 
-    (weights, nodes, game) = Weight_Puller.weightPuller()
-    nodesList = [None] * len(nodes)
-    print len(nodes)
-    
 
-    nodesList[0] = values
-    for i in range(1,len(nodes)):
-        nodesList[i] = [None] * nodes[i]
-        for a in range(nodes[i]):
-            nodesList[i][a] = 0
     for layer in range (len(nodes)-1):
         for node in range (len(nodesList[layer])) :
             for i in range(len(weights[layer][node])):
                 nodesList[layer+1][i] += (float(nodesList[layer][node]) * float(weights[layer][node][i]))
-
-    for i in range (len(nodesList[len(nodes)-1])):
-        nodesList[len(nodes)-1][i] = maths.sigmoid(nodesList[len(nodes)-1][i])
-
-    actual = [0] * 128
-    
-    moves = dataSetOrganizer.dataSetOrgan()
     
     if gameEnd == False:
         currentMove = moves[game][moveNum][0]
@@ -51,8 +30,8 @@ def neuralNetworkLearning(values,gameEnd, moveNum, ):
         correctMoveNode = ((int(currentMove[0]) - 1) * 4) + int(dirValue)
 
         error.append(Learning_algorithm.errorIndiv(nodesList[len(nodes)-1],correctMoveNode))
+        return 
 
-        return (
 
 
 
@@ -66,6 +45,27 @@ def neuralNetworkLearning(values,gameEnd, moveNum, ):
         NetworkRecorder.networkRecorder(weights,nodes,game)        
         
 
+def neuralNetInit():
+    
+
+    (weights, nodes, game) = Weight_Puller.weightPuller()
+    nodesList = [None] * len(nodes)
+    print len(nodes)
+    
+
+    for i in range(1,len(nodes)):
+        nodesList[i] = [None] * nodes[i]
+        for a in range(nodes[i]):
+            nodesList[i][a] = 0
+
+    for i in range (len(nodesList[len(nodes)-1])):
+        nodesList[len(nodes)-1][i] = maths.sigmoid(nodesList[len(nodes)-1][i])
+
+    actual = [0] * 128
+    
+    moves = dataSetOrganizer.dataSetOrgan()
+
+    return weights, nodes, nodesList, actual, moves, game
     
                                
 
