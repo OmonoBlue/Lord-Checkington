@@ -39,6 +39,7 @@ class NewBoard():
         self.height = height
 
         self.turn = 0
+        self.moveNum = 0
         # Setup pieces
 
         # total pieces remaining for each color
@@ -139,6 +140,8 @@ class NewBoard():
             if self.CheckMove(origin, direction):
                 self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
                 self.pos[origin[0]][origin[1]] = None
+                moveNum += 1
+                
             elif self.CheckMove(origin, direction) == False:
                 print "Can't move there!"
                 return
@@ -146,6 +149,7 @@ class NewBoard():
                 self.pos[moveList[0] + direction[0] * 2][moveList[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
                 self.pos[moveList[0] + direction[0]][moveList[1] + direction[1]] = None
                 self.pos[origin[0]][origin[1]] = None
+                moveNum += 1
         else:
             newOrigin = origin
             for move in moveList:
@@ -155,6 +159,7 @@ class NewBoard():
                     self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
                     self.pos[newOrigin[0]][newOrigin[1]] = None
                     newOrigin = (move[0], move[1])
+                    moveNum += 1
 
                 else:
                     print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."
@@ -250,11 +255,4 @@ class NewBoard():
         return newBoard
 
     
-
-    
-board = NewBoard.Load("Board Test 2.bin") #Create the standard 8 by 8 board
-done = False
-
-
-board.Draw()
 
