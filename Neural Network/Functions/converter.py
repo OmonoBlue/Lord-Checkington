@@ -1,7 +1,7 @@
 import os
 import math
 
-Data = open('Test Game.txt', 'r').read().split(" ")
+##Data = open('Test Game.txt', 'r').read().split(" ")
 
 conversionList = {
     1: [6, 0],
@@ -38,10 +38,10 @@ conversionList = {
     32: [1, 7]
     }
 
-corList = conversionList.items()
+##corList = conversionList.items()
 
 def numToCor(num):
-    return conversionList[num]
+    return conversionList[int(num)]
 
 def corToNum(cor1, cor2):
 

@@ -2,15 +2,18 @@ import math
 import os
 import importlib
 importlib.import_module('Functions')
-from Functions import Weight_Puller, maths, NetworkRecorder, dataSetOrganizer, converter 
+from Functions import Weight_Puller, maths, NetworkRecorder, dataSetOrganizer, converter, Learning_algorithm
 
-def neuralNetworkLearning(values,gameEnd, moveNum):
-    weights = []
-    nodes = []
+def neuralNetworkLearning(values,gameEnd, moveNum, ):
+    if moveNum = 0:
+        weights = []
+        nodes = []
+        error = []
     
 
-    (weights, nodes, games) = Weight_Puller.weightPuller()
+    (weights, nodes, game) = Weight_Puller.weightPuller()
     nodesList = [None] * len(nodes)
+    print len(nodes)
     
 
     nodesList[0] = values
@@ -28,7 +31,7 @@ def neuralNetworkLearning(values,gameEnd, moveNum):
 
     actual = [0] * 128
     
-    moves = dataSetOrgan()
+    moves = dataSetOrganizer.dataSetOrgan()
     
     if gameEnd == False:
         currentMove = moves[game][moveNum][0]
@@ -45,16 +48,28 @@ def neuralNetworkLearning(values,gameEnd, moveNum):
                 dirValue = 2
             if currentMove[1][1] == -1:
                 dirValue = 3
-        correctMoveNode = ((currentMove[0] - 1) * 4) + dirValue
-        print correctMoveNode
-        
-        
+        correctMoveNode = ((int(currentMove[0]) - 1) * 4) + int(dirValue)
+
+        error.append(Learning_algorithm.errorIndiv(nodesList[len(nodes)-1],correctMoveNode))
+
+        return (
+
+
 
         
-    print nodesList[3]
+    if gameEnd == True:
+        game += 1
+        errorTot = maths.errorSum(error)
+        errorGradList = maths.errorGrad(errorTot, weights)
+        weights = maths.weightDiff(errorGradList, weights)
+        
+        NetworkRecorder.networkRecorder(weights,nodes,game)        
+        
+
     
                                
 
 list1 = [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
 neuralNetworkLearning(list1,False,0)
+
