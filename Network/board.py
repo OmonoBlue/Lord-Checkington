@@ -2,7 +2,6 @@
 import math
 import os
 import pickle
-from pygame import *
 
 #some stuff to make code better and ez reads
 P_COL = 0
@@ -40,6 +39,7 @@ class NewBoard():
 
         self.turn = 0
         self.moveNum = 0
+        self.gameOver = False
         # Setup pieces
 
         # total pieces remaining for each color
@@ -120,7 +120,45 @@ class NewBoard():
         elif col < 0 or col > 2:
             return False
 
-            
+        moveList = []
+        directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
+        
+        for row in range(len(self.pos[1])):
+            for column in range(len(self.pos)):
+                if self.pos[column][row] != None:
+                    if self.pos[column][row][P_COL] == colour:
+                        
+                        for direction in directions:
+                            if self.checkMove((column, row), direction) == True:
+                                moveList.append( [ [column, row], [column + direction[0], row + direction[1]] ] )
+                            elif self.checkMove((column, row), direction) == "Capture":
+                                moveList.append( [ [column, row], [column + direction[0] * 2, row + direction[1] * 2] ] )
+
+        if len(moveList) == 0:
+            return False
+        else:
+            return moveList
+
+                    
+
+    def CheckGameEnd(self):
+
+        bNum = 0
+        wNum = 0
+
+        for row in range(len(self.pos[0])):
+            for space in range(len(self.pos)):
+                if self.pos[space][row] != None:
+                    if self.pos[space][row][P_COL] == 0:
+                        wNum += 1
+                    elif self.pos[space][row][P_COL] == 1:
+                        bNum += 1
+
+        if bNum == 0 or wNum == 0:
+            return True
+        else:
+            return False
+        
     def Move(self, origin, moveList):         
         if isinstance(origin, tuple) and len(origin) == 2:
 
@@ -144,37 +182,60 @@ class NewBoard():
             return
 
         print "isSingleMove:", isSingleMove
-        if isSingleMove:
-            direction = ( (moveList[0] - origin[0]) / abs(moveList[0] - origin[0]) , (moveList[1] - origin[1]) / abs(moveList[1] - origin[1]) )
 
-            print "direction", direction
-            if self.CheckMove(origin, direction):
-                self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
-                self.pos[origin[0]][origin[1]] = None
-                self.moveNum += 1
-                
-            elif self.CheckMove(origin, direction) == False:
-                print "Can't move there!"
-                return
-            else:
-                self.pos[moveList[0] + direction[0] * 2][moveList[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
-                self.pos[moveList[0] + direction[0]][moveList[1] + direction[1]] = None
-                self.pos[origin[0]][origin[1]] = None
-                self.moveNum += 1
+        if self.pos[origin[0]][origin[1]][P_COL] != self.turn:
+            print "It's not your turn!"
+            return
+        
+        if self.getValidMoves(self.pos[origin[0]][origin[1]][P_COL]) == False:
+            print "Stalemate, Game Over"
+            self.gameOver = True
+            return
+
+        
         else:
-            newOrigin = origin
-            for move in moveList:
-                direction = ( (move[0] - newOrigin[0]) / abs(move[0] - newOrigin[0]) , (move[1] - newOrigin[1]) / abs(move[1] - newOrigin[1]) )
-                if self.CheckMove(newOrigin, direction) == "Capture":
-                    self.pos[move[0]][move[1]] = self.pos[newOrigin[0]][newOrigin[1]]
-                    self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
-                    self.pos[newOrigin[0]][newOrigin[1]] = None
-                    newOrigin = (move[0], move[1])
-                    self.moveNum += 1
 
-                else:
-                    print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."
+ 
+            if isSingleMove:
+                direction = ( (moveList[0] - origin[0]) / abs(moveList[0] - origin[0]) , (moveList[1] - origin[1]) / abs(moveList[1] - origin[1]) )
+
+                print "direction", direction
+                if self.CheckMove(origin, direction):
+                    self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
+                    self.pos[origin[0]][origin[1]] = None
+                    self.moveNum += 1
+                    self.turn = (self.turn - 1) * -1
+                    
+                elif self.CheckMove(origin, direction) == False:
+                    print "Can't move there!"
                     return
+                else:
+                    self.pos[moveList[0] + direction[0] * 2][moveList[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
+                    self.pos[moveList[0] + direction[0]][moveList[1] + direction[1]] = None
+                    self.pos[origin[0]][origin[1]] = None
+                    self.moveNum += 1
+                    self.turn = (self.turn - 1) * -1
+            else:
+                newOrigin = origin
+                pieceMoved = False
+                for move in moveList:
+                    direction = ( (move[0] - newOrigin[0]) / abs(move[0] - newOrigin[0]) , (move[1] - newOrigin[1]) / abs(move[1] - newOrigin[1]) )
+                    if self.CheckMove(newOrigin, direction) == "Capture":
+                        self.pos[move[0]][move[1]] = self.pos[newOrigin[0]][newOrigin[1]]
+                        self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
+                        self.pos[newOrigin[0]][newOrigin[1]] = None
+                        newOrigin = (move[0], move[1])
+                        pieceMoved = True
+                    else:
+                        print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."
+                        return
+
+                if pieceMoved == True:
+                    self.moveNum += 1
+                    self.turn = (self.turn - 1) * -1
+
+            
+        
 
                 
         

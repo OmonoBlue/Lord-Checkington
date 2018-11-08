@@ -4,9 +4,9 @@ import importlib
 importlib.import_module('Functions')
 from Functions import Weight_Puller, maths, NetworkRecorder, dataSetOrganizer, converter, Learning_algorithm
 
-def neuralNetworkLearning(values,gameEnd,moveNum,nodes,nodesList,weights,actual,moves,game):
+def neuralNetworkLearning(values,gameEnd,moveNum,nodes,nodesList,weights,actual,moves,game,error):
 
-
+    nodesList[0] = values
     for layer in range (len(nodes)-1):
         for node in range (len(nodesList[layer])) :
             for i in range(len(weights[layer][node])):
@@ -30,7 +30,9 @@ def neuralNetworkLearning(values,gameEnd,moveNum,nodes,nodesList,weights,actual,
         correctMoveNode = ((int(currentMove[0]) - 1) * 4) + int(dirValue)
 
         error.append(Learning_algorithm.errorIndiv(nodesList[len(nodes)-1],correctMoveNode))
-        return 
+        for i in range (len(moves[game][moveNum][1])):
+            moves[game][moveNum][1][i] = converter.numToCor(moves[game][moveNum][1][i])
+        return error, moves[game][moveNum][1]
 
 
 
@@ -42,7 +44,9 @@ def neuralNetworkLearning(values,gameEnd,moveNum,nodes,nodesList,weights,actual,
         errorGradList = maths.errorGrad(errorTot, weights)
         weights = maths.weightDiff(errorGradList, weights)
         
-        NetworkRecorder.networkRecorder(weights,nodes,game)        
+        NetworkRecorder.networkRecorder(weights,nodes,game)
+        error = []
+        return weights
         
 
 def neuralNetInit():
@@ -50,7 +54,6 @@ def neuralNetInit():
 
     (weights, nodes, game) = Weight_Puller.weightPuller()
     nodesList = [None] * len(nodes)
-    print len(nodes)
     
 
     for i in range(1,len(nodes)):
