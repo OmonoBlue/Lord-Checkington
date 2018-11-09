@@ -81,6 +81,8 @@ class NewBoard():
     def CheckMove(self, oriCor, direction):
         
         origin = self.pos[oriCor[0]][oriCor[1]]
+
+        
         destination = self.pos[oriCor[0] + direction[0]][oriCor[1] + direction[1]]
 
         #Check if there is a moveable piece
@@ -126,12 +128,12 @@ class NewBoard():
         for row in range(len(self.pos[1])):
             for column in range(len(self.pos)):
                 if self.pos[column][row] != None:
-                    if self.pos[column][row][P_COL] == colour:
+                    if self.pos[column][row][P_COL] == int(col):
                         
                         for direction in directions:
-                            if self.checkMove((column, row), direction) == True:
+                            if self.CheckMove((column, row), direction) == True:
                                 moveList.append( [ [column, row], [column + direction[0], row + direction[1]] ] )
-                            elif self.checkMove((column, row), direction) == "Capture":
+                            elif self.CheckMove((column, row), direction) == "Capture":
                                 moveList.append( [ [column, row], [column + direction[0] * 2, row + direction[1] * 2] ] )
 
         if len(moveList) == 0:
@@ -187,7 +189,7 @@ class NewBoard():
             print "It's not your turn!"
             return
         
-        if self.getValidMoves(self.pos[origin[0]][origin[1]][P_COL]) == False:
+        if self.GetValidMoves(self.pos[origin[0]][origin[1]][P_COL]) == False:
             print "Stalemate, Game Over"
             self.gameOver = True
             return
