@@ -82,8 +82,12 @@ class NewBoard():
         
         origin = self.pos[oriCor[0]][oriCor[1]]
 
-        
-        destination = self.pos[oriCor[0] + direction[0]][oriCor[1] + direction[1]]
+        try:
+            destination = self.pos[oriCor[0] + direction[0]][oriCor[1] + direction[1]]
+            doubleDest = self.pos[oriCor[0] + direction[0] * 2][oriCor[1] + direction[1] * 2]
+        except:
+            print "Can't move off board"
+            return False
 
         #Check if there is a moveable piece
         if origin == None:
@@ -183,17 +187,11 @@ class NewBoard():
             print "Error, origin must be a co-ordiante"
             return
 
-        print "isSingleMove:", isSingleMove
-
+        print "origin is", origin
+        self.Draw()
         if self.pos[origin[0]][origin[1]][P_COL] != self.turn:
             print "It's not your turn!"
             return
-        
-        if self.GetValidMoves(self.pos[origin[0]][origin[1]][P_COL]) == False:
-            print "Stalemate, Game Over"
-            self.gameOver = True
-            return
-
         
         else:
 
@@ -205,8 +203,6 @@ class NewBoard():
                 if self.CheckMove(origin, direction):
                     self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
                     self.pos[origin[0]][origin[1]] = None
-                    self.moveNum += 1
-                    self.turn = (self.turn - 1) * -1
                     
                 elif self.CheckMove(origin, direction) == False:
                     print "Can't move there!"
@@ -216,7 +212,6 @@ class NewBoard():
                     self.pos[moveList[0] + direction[0]][moveList[1] + direction[1]] = None
                     self.pos[origin[0]][origin[1]] = None
                     self.moveNum += 1
-                    self.turn = (self.turn - 1) * -1
             else:
                 newOrigin = origin
                 pieceMoved = False
@@ -227,18 +222,18 @@ class NewBoard():
                         self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
                         self.pos[newOrigin[0]][newOrigin[1]] = None
                         newOrigin = (move[0], move[1])
-                        pieceMoved = True
                     else:
                         print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."
                         return
 
-                if pieceMoved == True:
-                    self.moveNum += 1
-                    self.turn = (self.turn - 1) * -1
-
             
-        
+        if self.GetValidMoves(self.turn) == False:
+            print "Stalemate, Game Over"
+            self.gameOver = True
+            return
 
+        self.moveNum += 1
+        self.turn = (self.turn - 1) * -1
                 
         
     #print board
@@ -283,31 +278,56 @@ class NewBoard():
         
         if flipped == True:
             order = -1
+            
+            for row in range(len(self.pos[0]) - 1, -1, -1):
+                for space in range(len(self.pos)):
+                    
+                    mode = row % 2
+                    
+                    if space % 2 == mode:
+                        
+                        if self.pos[space][row] == None:
+                            statList.append(0)
+                            
+                        else:
+
+                            if self.pos[space][row][P_COL] == 0:
+                                if self.pos[space][row][P_KING] == True:
+                                    statList.append(-3 * order)
+                                else:
+                                    statList.append(-1 * order)
+                            else:
+                                if self.pos[space][row][P_KING] == True:
+                                    statList.append(3 * order)
+                                else:
+                                    statList.append(1 * order)
         else:
             order = 1
-            
-        for row in range(len(self.pos)):
-            for space in range(len(self.pos[row]) - 1, -1 ,-1):
-                
-                mode = row % 2
-                
-                if space % 2 == mode:
-                    
-                    if self.pos[row][space] == None:
-                        statList.append(0)
-                        
-                    else:
 
-                        if self.pos[row][space][P_COL] == 0:
-                            if self.pos[row][space][P_KING] == True:
-                                statList.append(-3 * order)
-                            else:
-                                statList.append(-1 * order)
+            for row in range(len(self.pos[0])):
+                for space in range(len(self.pos) - 1, -1, -1):
+                    
+                    mode = row % 2
+                    
+                    if space % 2 == mode:
+                        
+                        if self.pos[space][row] == None:
+                            statList.append(0)
+                            
                         else:
-                            if self.pos[row][space][P_KING] == True:
-                                statList.append(3 * order)
+
+                            if self.pos[space][row][P_COL] == 0:
+                                if self.pos[space][row][P_KING] == True:
+                                    statList.append(-3 * order)
+                                else:
+                                    statList.append(-1 * order)
                             else:
-                                statList.append(1 * order)
+                                if self.pos[space][row][P_KING] == True:
+                                    statList.append(3 * order)
+                                else:
+                                    statList.append(1 * order)
+
+        
         return statList
 
     @staticmethod

@@ -17,14 +17,15 @@ for i in range (gameAmount):
     looping = True
 
     while looping == True:
-        if Game.CheckGameEnd() == False:
+        if Game.CheckGameEnd() == True:
             looping = False
-
+        print "the move is " + str(Game.moveNum)
+        print Game.GetStats(False)
+        print Game.GetStats(True)
         if Game.turn == 0:
             if Game.CheckGameEnd() == False:
                 error, move = MainNetwork.neuralNetworkLearning(Game.GetStats(False), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
 
-            print move
             if Game.CheckGameEnd() == True:
                 weights = MainNetwork.neuralNetworkLearning(Game.GetStats(False), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
 
@@ -32,11 +33,11 @@ for i in range (gameAmount):
             if Game.CheckGameEnd() == False:
                 error, move = MainNetwork.neuralNetworkLearning(Game.GetStats(True), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
 
-                for i in range (len(move)):
-                    move[i][0] = (move[i][0]-7) *-1
-                    move[i][1] = (move[i][1]-7) *-1
+
+                #move[i][0] = (move[i][0]-7) *-1
+                #move[i][1] = (move[i][1]-7) *-1
                 
-            print move
+
             if Game.CheckGameEnd() == True:
                 weights = MainNetwork.neuralNetworkLearning(Game.GetStats(True), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
 
@@ -55,8 +56,6 @@ for i in range (gameAmount):
             
         else:
             Game.Move((move[0][0], move[0][1]), (move[1][0], move[1][1]))
-
-        Game.Move((move[0][0], move[0][1]), (move[1][0], move[1][1]))
 
 
 
