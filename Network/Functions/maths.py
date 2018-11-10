@@ -10,11 +10,10 @@ def sigmoid(x):
     return float(y)
 
 def errorFunc(o, t):
-    error = 1/2*(o-t)**2
+    error = 1/2(o-t)^2
     return error
 
 def errorSum(errorList):
-    accum = 0
     for i in errorList:
         accum += i
     return accum
