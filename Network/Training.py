@@ -17,28 +17,37 @@ for i in range (gameAmount):
     looping = True
 
     while looping == True:
-        if Game.CheckGameEnd() == True:
+        if Game.CheckGameEnd() == True or Game.gameOver == True:
             looping = False
         print "the move is " + str(Game.moveNum)
-        print Game.GetStats(False)
-        print Game.GetStats(True)
+##        print Game.GetStats(False)
+##        print Game.GetStats(True)
         if Game.turn == 0:
             if Game.CheckGameEnd() == False:
-                error, move = MainNetwork.neuralNetworkLearning(Game.GetStats(False), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
+                try:
+                    error, move = MainNetwork.neuralNetworkLearning(Game.GetStats(False), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
+                except IndexError:
+                    Game.gameOver = True
+                    weights = MainNetwork.neuralNetworkLearning(Game.GetStats(False), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
 
-            if Game.CheckGameEnd() == True:
+            if Game.CheckGameEnd() == True or Game.gameOver == True:
                 weights = MainNetwork.neuralNetworkLearning(Game.GetStats(False), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
 
         if Game.turn == 1:
             if Game.CheckGameEnd() == False:
-                error, move = MainNetwork.neuralNetworkLearning(Game.GetStats(True), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
+                try:
+                    error, move = MainNetwork.neuralNetworkLearning(Game.GetStats(True), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
+                except IndexError:
+                    Game.gameOver = True
+                    weights = MainNetwork.neuralNetworkLearning(Game.GetStats(True), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
+                    
 
 
                 #move[i][0] = (move[i][0]-7) *-1
                 #move[i][1] = (move[i][1]-7) *-1
                 
 
-            if Game.CheckGameEnd() == True:
+            if Game.CheckGameEnd() == True or Game.gameOver == True:
                 weights = MainNetwork.neuralNetworkLearning(Game.GetStats(True), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
 
 
