@@ -72,7 +72,7 @@ class NewBoard():
             
             for space in range(width -1, -1, -1):
                 if space % 2 == mode:
-                    self.pos[space][row] = (1, False)
+                    self.pos[space][row] = [1, False]
                     totalb -= 1
             
             if totalb < 1:
@@ -84,33 +84,37 @@ class NewBoard():
 
         try:
             destination = self.pos[oriCor[0] + direction[0]][oriCor[1] + direction[1]]
-            doubleDest = self.pos[oriCor[0] + direction[0] * 2][oriCor[1] + direction[1] * 2]
         except:
-            print "Can't move off board"
+            #print "Can't move off board"
             return False
 
         #Check if there is a moveable piece
         if origin == None:
-            print "No piece in origin"
+            #print "No piece in origin"
             return False
         
         elif ((origin[P_COL] == 0 and direction[1] <= -1) or (origin[P_COL] == 1 and direction[1] >= 1)) and origin[P_KING] == False:
-            print "Can't move in that direction"
+            #print "Can't move in that direction"
             return False
 
         elif destination != None:
+            try:
+                doubleDest = self.pos[oriCor[0] + direction[0] * 2][oriCor[1] + direction[1] * 2]
+            except:
+                #print "Can't jump out of bounds"
+                return
             if destination[P_COL] == origin[P_COL]:
-                print "Can't capture own colour!"
+                #print "Can't capture own colour!"
                 return False
             elif (oriCor[0] + direction[0] * 2 > self.width + 1) or (oriCor[1] + direction[1] * 2  > self.height + 1) or (oriCor[0] + direction[0] * 2 < 0) or (oriCor[1] + direction[1] * 2  < 0):
-                print "Can't go out of bounds!"
+                #print "Can't go out of bounds!"
                 return False
-                
+            
             elif self.pos[oriCor[0] + direction[0] * 2][oriCor[1] + direction[1] * 2] != None:
-                print "Capture Blocked"
+                #print "Capture Blocked"
                 return False
             else:
-                print "Capture Possible"
+                #print "Capture Possible"
                 return "Capture"
         else:
             return True
@@ -165,13 +169,15 @@ class NewBoard():
         else:
             return False
         
-    def Move(self, origin, moveList):         
-        if isinstance(origin, tuple) and len(origin) == 2:
+    def Move(self, origin, moveList):
 
-            if isinstance(moveList, tuple):
+        
+        if (isinstance(origin, tuple) or isinstance(moveList, list)) and len(origin) == 2:
+
+            if isinstance(moveList, tuple) or isinstance(moveList, list):
 
                 if len(moveList) == 2:
-                    if isinstance(moveList[0], tuple):
+                    if isinstance(moveList[0], tuple) or isinstance(moveList, list):
                         isSingleMove = False
                     else:
                         isSingleMove = True
@@ -189,7 +195,10 @@ class NewBoard():
 
         print "origin is", origin
         self.Draw()
-        if self.pos[origin[0]][origin[1]][P_COL] != self.turn:
+
+        playerColour = self.pos[origin[0]][origin[1]][P_COL]
+        
+        if playerColour != self.turn:
             print "It's not your turn!"
             return
         
@@ -198,20 +207,31 @@ class NewBoard():
  
             if isSingleMove:
                 direction = ( (moveList[0] - origin[0]) / abs(moveList[0] - origin[0]) , (moveList[1] - origin[1]) / abs(moveList[1] - origin[1]) )
-
+                moveCheck = self.CheckMove(origin, direction)
+                print moveCheck
                 print "direction", direction
-                if self.CheckMove(origin, direction):
+                if moveCheck == True:
                     self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
                     self.pos[origin[0]][origin[1]] = None
-                    
-                elif self.CheckMove(origin, direction) == False:
+
+                    if playerColour == 0 and moveList[1] == self.height - 1:
+                        self.pos[moveList[0]][moveList[1]][P_KING] = True
+                    elif playerColour == 1 and moveList[1] == 0:
+                        self.pos[moveList[0]][moveList[1]][P_KING] = True
+
+                        
+                elif moveCheck == False:
                     print "Can't move there!"
                     return
-                else:
-                    self.pos[moveList[0] + direction[0] * 2][moveList[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
-                    self.pos[moveList[0] + direction[0]][moveList[1] + direction[1]] = None
+                elif moveCheck == "Capture":
+                    self.pos[origin[0] + direction[0] * 2][origin[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
+                    self.pos[origin[0] + direction[0]][origin[1] + direction[1]] = None
                     self.pos[origin[0]][origin[1]] = None
-                    self.moveNum += 1
+
+                    if playerColour == 0 and moveList[1] == self.height - 1:
+                        self.pos[moveList[0]][moveList[1]][P_KING] = True
+                    elif playerColour == 1 and moveList[1] == 0:
+                        self.pos[moveList[0]][moveList[1]][P_KING] = True
             else:
                 newOrigin = origin
                 pieceMoved = False
@@ -222,11 +242,17 @@ class NewBoard():
                         self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
                         self.pos[newOrigin[0]][newOrigin[1]] = None
                         newOrigin = (move[0], move[1])
+
+                        if playerColour == 0 and newOrigin[1] == self.height - 1:
+                            self.pos[newOrigin[0]][newOrigin[1]][P_KING] = True
+                        elif playerColour == 1 and newOrigin[1] == 0:
+                            self.pos[newOrigin[0]][newOrigin[1]][P_KING] = True
                     else:
                         print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."
                         return
 
-            
+                    
+
         if self.GetValidMoves(self.turn) == False:
             print "Stalemate, Game Over"
             self.gameOver = True
