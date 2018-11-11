@@ -195,8 +195,10 @@ class NewBoard():
 
         print "origin is", origin
         self.Draw()
-
-        playerColour = self.pos[origin[0]][origin[1]][P_COL]
+        try:
+            playerColour = self.pos[origin[0]][origin[1]][P_COL]
+        except:
+            return
         
         if playerColour != self.turn:
             print "It's not your turn!"

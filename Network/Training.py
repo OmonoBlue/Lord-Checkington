@@ -16,10 +16,12 @@ for i in range (gameAmount):
     Game = board.NewBoard(8, 8)
     looping = True
 
+    print "Gamelength:", len(moves[gameNum])
     while looping == True:
         if Game.CheckGameEnd() == True or Game.gameOver == True:
             looping = False
         print "the move is " + str(Game.moveNum)
+        
 ##        print Game.GetStats(False)
 ##        print Game.GetStats(True)
         if Game.turn == 0:
@@ -50,13 +52,14 @@ for i in range (gameAmount):
             if Game.CheckGameEnd() == True or Game.gameOver == True:
                 weights = MainNetwork.neuralNetworkLearning(Game.GetStats(True), Game.gameOver, Game.moveNum, nodes, nodesList, weights, actual, moves, gameNum,error)
 
-
+        
 
         if len(move) > 2:
             multiHop = True
         else:
             multiHop = False
 
+        
         if multiHop:
             destList = []
             for dest in range(1, len(move)):

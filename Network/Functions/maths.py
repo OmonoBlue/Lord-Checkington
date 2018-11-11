@@ -17,7 +17,10 @@ def errorFunc(o, t):
 def errorSum(errorList):
     accum = 0
     for i in errorList:
-        accum += i
+        try:
+            accum += i
+        except:
+            pass
     return accum
 
 def errorGrad(error, weight):
