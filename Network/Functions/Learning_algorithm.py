@@ -11,4 +11,5 @@ def errorIndiv (nodes, act):
             error.append(errorFunc(nodes[i],1))
 
     totalError = errorSum(error)
+    return totalError
     

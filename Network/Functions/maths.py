@@ -19,8 +19,9 @@ def errorSum(errorList):
     for i in errorList:
         try:
             accum += i
-        except:
+        except(TypeError):
             pass
+
     return accum
 
 def errorGrad(error, weight):
@@ -43,8 +44,7 @@ def weightDiff(errorList, weight):
     for layer in range(len(weight)):
         for node in range(len(weight[layer])):
             for i in range (len(weight[layer][node])):
-                weight[layer][node][i] = weight[layer][node][i] + (-lc*(sigmoid(errorList[count]/sigmoid(weight[layer][node][i]))))
-
+                weight[layer][node][i] =(-lc*(sigmoid(errorList[count]/sigmoid(weight[layer][node][i]))))
                 count += 1
     
     
