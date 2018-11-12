@@ -9,7 +9,9 @@ def dataSetOrgan():
     data = data.replace(')', '')
     data = data.replace('[','(')
     data = data.replace(']',')')
-
+    data = data.replace('}','')
+    data = data.replace('{','')
+    
 
     data = re.split('[()]', data)
     count = 0

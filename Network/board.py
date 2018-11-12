@@ -193,7 +193,7 @@ class NewBoard():
             print "Error, origin must be a co-ordiante"
             return
 
-        #print "origin is", origin
+        print "origin is", origin
 
         try:
             playerColour = self.pos[origin[0]][origin[1]][P_COL]
