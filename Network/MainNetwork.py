@@ -31,7 +31,7 @@ def neuralNetworkLearning(values,gameEnd,moveNum,nodes,nodesList,weights,actual,
 
         error.append(Learning_algorithm.errorIndiv(nodesList[len(nodes)-1],correctMoveNode))
         for i in range (len(moves[game][moveNum][1])):
-            print moves[game][moveNum][1][i]
+##            print moves[game][moveNum][1][i]
             try:
                 moves[game][moveNum][1][i] = converter.numToCor(moves[game][moveNum][1][i])
             except (TypeError):

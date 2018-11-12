@@ -193,8 +193,8 @@ class NewBoard():
             print "Error, origin must be a co-ordiante"
             return
 
-        print "origin is", origin
-        self.Draw()
+        #print "origin is", origin
+
         try:
             playerColour = self.pos[origin[0]][origin[1]][P_COL]
         except:
@@ -210,8 +210,8 @@ class NewBoard():
             if isSingleMove:
                 direction = ( (moveList[0] - origin[0]) / abs(moveList[0] - origin[0]) , (moveList[1] - origin[1]) / abs(moveList[1] - origin[1]) )
                 moveCheck = self.CheckMove(origin, direction)
-                print moveCheck
-                print "direction", direction
+##                print moveCheck
+##                print "direction", direction
                 if moveCheck == True:
                     self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
                     self.pos[origin[0]][origin[1]] = None
@@ -299,6 +299,7 @@ class NewBoard():
         print " ",
         for num in range(len(SPACE_ABC)):
             print SPACE_ABC[num],
+        print ""
             
           
     def GetStats(self, flipped):
