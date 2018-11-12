@@ -193,7 +193,7 @@ class NewBoard():
             print "Error, origin must be a co-ordiante"
             return
 
-        print "origin is", origin
+##        print "origin is", origin
 
         try:
             playerColour = self.pos[origin[0]][origin[1]][P_COL]
@@ -201,9 +201,7 @@ class NewBoard():
             return
         
         if playerColour != self.turn:
-            print "It's not your turn!"
-            return
-        
+            raise Exception("It's not your turn!")
         else:
 
  
