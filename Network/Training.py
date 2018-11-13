@@ -9,8 +9,9 @@ import MainNetwork
 weights, nodes, nodesList, actual, moves, gameNum = MainNetwork.neuralNetInit()
 error = []
 move = []
+freshNodeList = []
 gameAmount = int(raw_input("How many games will you simulate?\nGame amount: "))
-
+freshNodeList = nodesList
 
 for i in range (gameAmount):
     Game = board.NewBoard(8, 8)
@@ -22,6 +23,7 @@ for i in range (gameAmount):
     if gameNum != 428:
     
         while looping == True:
+            nodesList = freshNodeList
             if Game.CheckGameEnd() == True or Game.gameOver == True or len(moves[gameNum]) == Game.moveNum: 
                 looping = False
     ##        print "the move is " + str(Game.moveNum)

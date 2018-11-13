@@ -24,19 +24,21 @@ def hiddenError (nodes, weights, error):
 
     nodesError[3] = error
 
-    for layer in range (len(nodes)-1,0,-1):
+    for layer in range ((len(nodes))-2,0,-1):
         for node in range(len(nodes[layer])):
             for i in range (len(nodes[layer-1])):
-
+                
                 nodesError[layer-1][i] += (weights[layer-1][i][node] * nodesError[layer][node]) * derivative(nodes[layer][node])
 
 
-    for layer in range (len(nodes)-1):
+    for layer in range (len(nodes)-2):
         for node in range(len(nodes[layer])):
             for i in range (len(nodes[layer+1])):
 
 
-
+                print nodesError[layer+1][i]
+                print nodes[layer][node]
                 weights[layer][node][i] = weights[layer][node][i] + lc * nodesError[layer+1][i] * nodes[layer][node]
 
     return weights
+
