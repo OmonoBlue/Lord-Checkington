@@ -3,6 +3,8 @@ import math
 import random
 
 
+def derivative(o):
+    return o * (1.0 - o)
 
 def sigmoid(x):
     e = 2.71828182845904523536028747135266249775724709369995
@@ -10,8 +12,15 @@ def sigmoid(x):
 
     return float(y)
 
+def hiddenErrorFunc (oe,w,o):
+    return (w*oe) * derivative(o)
+
+
+
+
+
 def errorFunc(o, t):
-    error = 1/2*(t-o)**2
+    error = (t-o) * derivative(o)
     return error
 
 def errorSum(errorList):
@@ -44,7 +53,7 @@ def weightDiff(errorList, weight):
     for layer in range(len(weight)):
         for node in range(len(weight[layer])):
             for i in range (len(weight[layer][node])):
-                weight[layer][node][i] =(-lc*(sigmoid(errorList[count]/sigmoid(weight[layer][node][i]))))
+                weight[layer][node][i] += (-lc*(sigmoid(errorList[count])/sigmoid(weight[layer][node][i])))
                 count += 1
     
     

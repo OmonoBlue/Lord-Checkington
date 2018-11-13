@@ -6,13 +6,16 @@ from Functions import Weight_Puller, maths, NetworkRecorder, dataSetOrganizer, c
 
 def neuralNetworkLearning(values,gameEnd,moveNum,nodes,nodesList,weights,actual,moves,game,error):
 
-    nodesList[0] = values
-    for layer in range (len(nodes)-1):
-        for node in range (len(nodesList[layer])) :
-            for i in range(len(weights[layer][node])):
-                nodesList[layer+1][i] += (float(nodesList[layer][node]) * float(weights[layer][node][i]))
+    
+    
     
     if gameEnd == False:
+        nodesList[0] = values
+        for layer in range (len(nodes)-1):
+            for node in range (len(nodesList[layer])) :
+                for i in range(len(weights[layer][node])):
+                    nodesList[layer+1][i] += (float(nodesList[layer][node]) * float(weights[layer][node][i]))
+
         currentMove = moves[game][moveNum][0]
         currentMove = [currentMove[0], converter.spaceToDir(currentMove[0], currentMove[1])]
         dirValue = 0
@@ -44,9 +47,7 @@ def neuralNetworkLearning(values,gameEnd,moveNum,nodes,nodesList,weights,actual,
         
     if gameEnd == True:
         game += 1
-        errorTot = maths.errorSum(error)
-        errorGradList = maths.errorGrad(errorTot, weights)
-        weights = maths.weightDiff(errorGradList, weights)
+        weights = Learning_algorithm.hiddenError(nodesList,weights,error)
         
         NetworkRecorder.networkRecorder(weights,nodes,game)
         error = []
