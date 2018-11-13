@@ -11,7 +11,7 @@ def sigmoid(x):
     return float(y)
 
 def errorFunc(o, t):
-    error = 1/2*(t-o)**2
+    error = 1/2 * ((t-o)**2)
     return error
 
 def errorSum(errorList):
