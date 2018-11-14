@@ -88,6 +88,13 @@ class NewBoard():
             #print "Can't move off board"
             return False
 
+        if oriCor[0] + direction[0] < 0 or oriCor[0] + direction[0] > self.width - 1:
+            #print "Can't move horizontally off board"
+            return False
+        elif oriCor[1] + direction[1] < 0 or oriCor[1] + direction[1] > self.height - 1:
+            #print "Can't move vertically off board"
+            return False
+
         #Check if there is a moveable piece
         if origin == None:
             #print "No piece in origin"
@@ -131,9 +138,10 @@ class NewBoard():
             return False
 
         moveList = []
+        captureList = []
         directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
         
-        for row in range(len(self.pos[1])):
+        for row in range(len(self.pos[0])):
             for column in range(len(self.pos)):
                 if self.pos[column][row] != None:
                     if self.pos[column][row][P_COL] == int(col):
@@ -142,12 +150,68 @@ class NewBoard():
                             if self.CheckMove((column, row), direction) == True:
                                 moveList.append( [ [column, row], [column + direction[0], row + direction[1]] ] )
                             elif self.CheckMove((column, row), direction) == "Capture":
-                                moveList.append( [ [column, row], [column + direction[0] * 2, row + direction[1] * 2] ] )
+                                captureList.append( [ [column, row], [column + direction[0] * 2, row + direction[1] * 2] ] )
 
         if len(moveList) == 0:
-            return False
+            if len(captureList) > 0:
+                return captureList, "Capture"
+            else:
+                return False
         else:
-            return moveList
+            return moveList, "Move"
+
+
+    def Miller2Board(self, millerBoard):
+
+        if isinstance(millerBoard, list):
+            if isinstance(millerBoard[0], list):
+                for row in range(len(millerBoard[0]) - 1, -1, -1):
+                    for space in range(len(millerBoard)):
+                        if isinstance(millerBoard[row][space], str):
+                            try:
+                                currentSpace = self.pos[(row-7) * -1][space]
+                                spaceData = list(millerBoard[row][space])
+                            except:
+                                raise Exception("Error! Failed to convert string to list! " + str(row) + " " + str(space))
+
+                            if spaceData[0] == " " or spaceData[0].upper() == "X":
+                                newSpace = None
+                            elif len(spaceData) != 4:
+                                raise Exception("Error! Space list longer/shorter than expected! " + str(row) + " " + str(space))
+                            else:
+
+                                #check and convert colours
+                                if str(spaceData[0]) == "B":
+                                    currentCol = 0
+                                elif str(spaceData[0]) == "R":
+                                    currentCol = 1
+                                else:
+                                    raise Exception("Error! Colour value not as expected, spacedata: " + str(spaceData) + str(row) + " " + str(space))
+
+
+                                #check and convert kings
+
+                                if spaceData[3] == "P":
+                                    currentKing = False
+                                elif spaceData[3] == "K":
+                                    currentKing = True
+                                else:
+                                    raise Exception("Error! King value not as expected " + str(row) + " " + str(space))
+                                
+                                newSpace = [currentCol, currentKing]
+
+                            currentSpace = newSpace
+                                
+                                
+
+                        else:
+                            raise Exception("Error! Space is not a string! " + str(row) + " " + str(space))
+                        
+
+            else:
+                raise Exception("Error! Invalid given board sublist!")
+        else:
+            raise Exception("Error! Invalid given board!")
 
                     
 
