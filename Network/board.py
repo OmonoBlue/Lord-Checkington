@@ -126,7 +126,7 @@ class NewBoard():
         else:
             return True
 
-    def GetValidMoves(self, col):
+    def GetValidMoves(self, col, reverseY = False):
 
         if isinstance(col, int) == False:
             try:
@@ -152,11 +152,11 @@ class NewBoard():
                             elif self.CheckMove((column, row), direction) == "Capture":
                                 captureList.append( [ [column, row], [column + direction[0] * 2, row + direction[1] * 2] ] )
 
-        if len(moveList) == 0:
-            if len(captureList) > 0:
-                return captureList, "Capture"
-            else:
-                return False
+
+        if len(captureList) > 0:
+            return captureList, "Capture"
+        elif len(moveList) == 0:
+            return False
         else:
             return moveList, "Move"
 
@@ -165,11 +165,14 @@ class NewBoard():
 
         if isinstance(millerBoard, list):
             if isinstance(millerBoard[0], list):
-                for row in range(len(millerBoard[0]) - 1, -1, -1):
-                    for space in range(len(millerBoard)):
+
+
+                
+                for row in range(len(millerBoard)):
+                    for space in range(len(millerBoard[0])):
                         if isinstance(millerBoard[row][space], str):
                             try:
-                                currentSpace = self.pos[(row-7) * -1][space]
+                                currentSpace = self.pos[space][(row-7) * -1]
                                 spaceData = list(millerBoard[row][space])
                             except:
                                 raise Exception("Error! Failed to convert string to list! " + str(row) + " " + str(space))
@@ -200,7 +203,7 @@ class NewBoard():
                                 
                                 newSpace = [currentCol, currentKing]
 
-                            currentSpace = newSpace
+                            self.pos[space][(row-7) * -1] = newSpace
                                 
                                 
 
@@ -348,19 +351,25 @@ class NewBoard():
                         if highlightSpace != None and self.pos[space][row] == highlightSpace:
                             print "[o]",
                         else:
-                            print "O",
+                            if self.pos[space][row][P_KING]:
+                                print "Q",
+                            else:
+                                print "O",
                     elif self.pos[space][row][P_COL] == 1:
                         if highlightSpace != None and self.pos[space][row] == highlightSpace:
                             print "[x]",
                         else:
-                            print "X",
+                            if self.pos[space][row][P_KING]:
+                                print "Z",
+                            else:
+                                print "X",
                 else:
                     print "-",
             print ""
 
         print " ",
         for num in range(len(SPACE_ABC)):
-            print SPACE_ABC[num],
+            print num,
         print ""
             
           
