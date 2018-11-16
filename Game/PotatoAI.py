@@ -30,6 +30,8 @@ def main(givenBoard, givenCol):
     else:
         raise Exception("Given move colour is not as expected")
 
+    Game.turn = moveCol
+
     # Get some baseline available moves
     starterMoves, moveType = Game.GetValidMoves(moveCol)
 
@@ -44,19 +46,25 @@ def main(givenBoard, givenCol):
 
     moveChoice = starterMoves[random.randint(0, len(starterMoves) - 1)]
 
+    #Start assembling the final move
+    finalCol = millerCols[Game.pos[moveChoice[0][0]][moveChoice[0][1]][board.P_COL]]
+    finalPiece = millerPiece[Game.pos[moveChoice[0][0]][moveChoice[0][1]][board.P_KING]]
+
     #Reverse co-ordinare to account for Millerboard
+    print moveChoice
+    for cor in moveChoice:
+        cor[1] = (cor[1] - 7) * -1
 
     print moveChoice
-    for cor in range(len(moveChoice)):
-        moveChoice[cor][1] = (moveChoice[cor][1] - 7) * -1
-        print moveChoice[cor]
 
-    for move in starterMoves:
-        for cor in move:
-            cor[1] = (cor[1] - 7) * -1
+    #Begin final formatting of move
+    finalResult = [finalCol + str(moveChoice[0][1]) + str(moveChoice[0][0]) + finalPiece]
 
-            
-    return moveChoice
+    #Add destinations to final move
+    for dest in range(1, len(moveChoice)):
+        finalResult.append(str(moveChoice[dest][1]) + str(moveChoice[dest][0]))
+
+    return finalResult
 
     
 

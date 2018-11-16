@@ -2,6 +2,7 @@
 import math
 import os
 import pickle
+import copy
 
 #some stuff to make code better and ez reads
 P_COL = 0
@@ -95,6 +96,9 @@ class NewBoard():
             #print "Can't move vertically off board"
             return False
 
+        if (origin[P_COL] == 0 and oriCor[1] == self.width - 1) or (origin[P_COL] == 0 and oriCor[1] == 0):
+            origin[P_KING] = True
+        
         #Check if there is a moveable piece
         if origin == None:
             #print "No piece in origin"
@@ -126,39 +130,83 @@ class NewBoard():
         else:
             return True
 
-    def GetValidMoves(self, col, reverseY = False):
+    def CheckPieceDirections(self, position):
+        destList = []
+        captureDone = False
 
+        directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
+        
+        for direction in directions:
+            
+            if self.CheckMove(position, direction) == True and captureDone == False:
+                destList.append([position[0] + direction[0], position[1] + direction[1]])
+                
+            elif self.CheckMove(position, direction) == "Capture":
+                if captureDone:
+                    destList.append([position[0] + direction[0] * 2, position[1] + direction[1] * 2])
+                else:
+                    destList = []
+                    destList.append([position[0] + direction[0] * 2, position[1] + direction[1] * 2])
+                    captureDone = True
+
+
+        return destList, captureDone
+
+    def ValidMoveSisterFunc(self, origin):
+        validMoves, capDone = self.CheckPieceDirections([origin[0], origin[1]])
+
+        maxjump = []
+        if capDone:
+            for move in validMoves:
+                print move
+                tmpboard = copy.copy(self)
+                tmpboard.Move(origin, move)
+                jump = [move, tmpboard.ValidMoveSisterFunc(move)]
+
+                if len(jump) > len(maxjump):
+                    maxjump = jump
+
+        return maxjump
+        
+    def GetValidMoves(self, col):
+
+        maxJumps = []
+        normalMoves = []
         if isinstance(col, int) == False:
             try:
                 colour = int(col)
             except:
-                print "Error! Valid colour must be provided (0 is red, 1 is black)"
-                return False
+                raise Exception("Error! Valid colour must be provided (0 is red, 1 is black)")
         elif col < 0 or col > 2:
-            return False
+            raise Exception("Error! Colour must be either 0 or 1")
 
-        moveList = []
-        captureList = []
-        directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
-        
+        #Loop through ever space on board
         for row in range(len(self.pos[0])):
-            for column in range(len(self.pos)):
-                if self.pos[column][row] != None:
-                    if self.pos[column][row][P_COL] == int(col):
-                        
-                        for direction in directions:
-                            if self.CheckMove((column, row), direction) == True:
-                                moveList.append( [ [column, row], [column + direction[0], row + direction[1]] ] )
-                            elif self.CheckMove((column, row), direction) == "Capture":
-                                captureList.append( [ [column, row], [column + direction[0] * 2, row + direction[1] * 2] ] )
+            for space in range(len(self.pos)):
+
+                #Check if there is a piece on the space
+                if self.pos[space][row] != None:
+
+                    #Check if piece is the wanted colour
+                    if self.pos[space][row][P_COL] == col:
+
+                        dests, capDone = self.CheckPieceDirections([space, row])
+
+                        if capDone:
+                            jump = self.ValidMoveSisterFunc([space, row])
+
+                            if len(jumps) > maxJumps:
+                                maxJumps = jumps
+                        else:
+                            normalMoves.append([[space, row], dests])
 
 
-        if len(captureList) > 0:
-            return captureList, "Capture"
-        elif len(moveList) == 0:
-            return False
+        if len(maxJumps) > 0:
+            
+            return maxJumps
         else:
-            return moveList, "Move"
+            return normalMoves
+        
 
 
     def Miller2Board(self, millerBoard):
@@ -262,61 +310,52 @@ class NewBoard():
 
 ##        print "origin is", origin
 
-        try:
-            playerColour = self.pos[origin[0]][origin[1]][P_COL]
-        except:
-            return
-        
-        if playerColour != self.turn:
-            raise Exception("It's not your turn!")
-        else:
-
- 
-            if isSingleMove:
-                direction = ( (moveList[0] - origin[0]) / abs(moveList[0] - origin[0]) , (moveList[1] - origin[1]) / abs(moveList[1] - origin[1]) )
-                moveCheck = self.CheckMove(origin, direction)
+        if isSingleMove:
+            direction = ( (moveList[0] - origin[0]) / abs(moveList[0] - origin[0]) , (moveList[1] - origin[1]) / abs(moveList[1] - origin[1]) )
+            moveCheck = self.CheckMove(origin, direction)
 ##                print moveCheck
 ##                print "direction", direction
-                if moveCheck == True:
-                    self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
-                    self.pos[origin[0]][origin[1]] = None
+            if moveCheck == True:
+                self.pos[moveList[0]][moveList[1]] = self.pos[origin[0]][origin[1]]
+                self.pos[origin[0]][origin[1]] = None
 
-                    if playerColour == 0 and moveList[1] == self.height - 1:
-                        self.pos[moveList[0]][moveList[1]][P_KING] = True
-                    elif playerColour == 1 and moveList[1] == 0:
-                        self.pos[moveList[0]][moveList[1]][P_KING] = True
+                if playerColour == 0 and moveList[1] == self.height - 1:
+                    self.pos[moveList[0]][moveList[1]][P_KING] = True
+                elif playerColour == 1 and moveList[1] == 0:
+                    self.pos[moveList[0]][moveList[1]][P_KING] = True
 
-                        
-                elif moveCheck == False:
-                    print "Can't move there!"
+                    
+            elif moveCheck == False:
+                print "Can't move there!"
+                return
+            elif moveCheck == "Capture":
+                self.pos[origin[0] + direction[0] * 2][origin[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
+                self.pos[origin[0] + direction[0]][origin[1] + direction[1]] = None
+                self.pos[origin[0]][origin[1]] = None
+
+                if playerColour == 0 and moveList[1] == self.height - 1:
+                    self.pos[moveList[0]][moveList[1]][P_KING] = True
+                elif playerColour == 1 and moveList[1] == 0:
+                    self.pos[moveList[0]][moveList[1]][P_KING] = True
+        else:
+            newOrigin = origin
+            pieceMoved = False
+            for move in moveList:
+                print move
+                direction = ( (move[0] - newOrigin[0]) / abs(move[0] - newOrigin[0]) , (move[1] - newOrigin[1]) / abs(move[1] - newOrigin[1]) )
+                if self.CheckMove(newOrigin, direction) == "Capture":
+                    self.pos[move[0]][move[1]] = self.pos[newOrigin[0]][newOrigin[1]]
+                    self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
+                    self.pos[newOrigin[0]][newOrigin[1]] = None
+                    newOrigin = (move[0], move[1])
+
+                    if playerColour == 0 and newOrigin[1] == self.height - 1:
+                        self.pos[newOrigin[0]][newOrigin[1]][P_KING] = True
+                    elif playerColour == 1 and newOrigin[1] == 0:
+                        self.pos[newOrigin[0]][newOrigin[1]][P_KING] = True
+                else:
+                    print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."
                     return
-                elif moveCheck == "Capture":
-                    self.pos[origin[0] + direction[0] * 2][origin[1] + direction[1] *2] = self.pos[origin[0]][origin[1]]
-                    self.pos[origin[0] + direction[0]][origin[1] + direction[1]] = None
-                    self.pos[origin[0]][origin[1]] = None
-
-                    if playerColour == 0 and moveList[1] == self.height - 1:
-                        self.pos[moveList[0]][moveList[1]][P_KING] = True
-                    elif playerColour == 1 and moveList[1] == 0:
-                        self.pos[moveList[0]][moveList[1]][P_KING] = True
-            else:
-                newOrigin = origin
-                pieceMoved = False
-                for move in moveList:
-                    direction = ( (move[0] - newOrigin[0]) / abs(move[0] - newOrigin[0]) , (move[1] - newOrigin[1]) / abs(move[1] - newOrigin[1]) )
-                    if self.CheckMove(newOrigin, direction) == "Capture":
-                        self.pos[move[0]][move[1]] = self.pos[newOrigin[0]][newOrigin[1]]
-                        self.pos[move[0] - direction[0]][move[1] - direction[1]] = None
-                        self.pos[newOrigin[0]][newOrigin[1]] = None
-                        newOrigin = (move[0], move[1])
-
-                        if playerColour == 0 and newOrigin[1] == self.height - 1:
-                            self.pos[newOrigin[0]][newOrigin[1]][P_KING] = True
-                        elif playerColour == 1 and newOrigin[1] == 0:
-                            self.pos[newOrigin[0]][newOrigin[1]][P_KING] = True
-                    else:
-                        print "Can't preform move: " + str(newOrigin) + "to " + str(move) + " Ending here..."
-                        return
 
                     
 
@@ -326,7 +365,6 @@ class NewBoard():
             return
 
         self.moveNum += 1
-        self.turn = (self.turn - 1) * -1
                 
         
     #print board
