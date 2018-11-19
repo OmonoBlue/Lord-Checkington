@@ -6,7 +6,7 @@ Game = board.NewBoard(8, 8)
 testBoard = [['  X ', 'R01P', '  X ', 'R03P', '  X ', 'R05P', '  X ', 'R07P'],
             ['R10P', '  X ', 'R12P', '  X ', 'R14P', '  X ', 'R16P', '  X '],
             ['  X ', 'R21P', '  X ', '    ', '  X ', 'R25P', '  X ', 'R27P'],
-            ['    ', '  X ', '    ', '  X ', 'R23P', '  X ', '    ', '  X '],
+            ['    ', '  X ', '    ', '  X ', 'R23P', '  X ', 'B36P', '  X '],
             ['  X ', '    ', '  X ', 'B52P', '  X ', '    ', '  X ', '    '],
             ['B50P', '  X ', '    ', '  X ', 'B54P', '  X ', '    ', '  X '],
             ['  X ', 'B61P', '  X ', 'B63P', '  X ', 'B65P', '  X ', 'B67P'],
@@ -18,6 +18,13 @@ millerCols = {0 : "B",
 millerPiece = {True : "K",
                False : "P"}
 
+def millerDraw(givenBoard):
+    for x in range(len(givenBoard)) :
+        print "|",
+        for y in range(len(givenBoard[x])) :
+                print givenBoard[x][y] + " |" ,
+        print ""
+        
 def main(givenBoard, givenCol):
 
     Game.Miller2Board(givenBoard)
@@ -33,31 +40,34 @@ def main(givenBoard, givenCol):
     Game.turn = moveCol
 
     # Get some baseline available moves
-    starterMoves, moveType = Game.GetValidMoves(moveCol)
+    starterMoves, movesAreCaps = Game.GetValidMoves(moveCol)
 
-    return starterMoves
+    #return starterMoves
     
     # Draw the MillerBoard
-    for x in range(len(givenBoard)) :
-        print "|",
-        for y in range(len(givenBoard[x])) :
-                print givenBoard[x][y] + " |" ,
-        print ""
+    #millerDraw(givenBoard)
         
     
+    if movesAreCaps:
+        maxMove = []
+        for move in starterMoves:
+            if len(move) > len(maxMove):
+                maxMove = move
 
-    moveChoice = starterMoves[random.randint(0, len(starterMoves) - 1)]
+        moveChoice = maxMove
+    else: 
+        moveChoice = starterMoves[random.randint(0, len(starterMoves) - 1)]
 
     #Start assembling the final move
     finalCol = millerCols[Game.pos[moveChoice[0][0]][moveChoice[0][1]][board.P_COL]]
     finalPiece = millerPiece[Game.pos[moveChoice[0][0]][moveChoice[0][1]][board.P_KING]]
 
     #Reverse co-ordinare to account for Millerboard
-    print moveChoice
+    #print moveChoice
     for cor in moveChoice:
         cor[1] = (cor[1] - 7) * -1
 
-    print moveChoice
+    #print moveChoice
 
     #Begin final formatting of move
     finalResult = [finalCol + str(moveChoice[0][1]) + str(moveChoice[0][0]) + finalPiece]

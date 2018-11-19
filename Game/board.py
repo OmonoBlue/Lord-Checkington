@@ -80,7 +80,7 @@ class NewBoard():
                 break
     
     def CheckMove(self, oriCor, direction):
-        print "oricor in CheckMove:", oriCor
+        #print "oricor in CheckMove:", oriCor
         origin = self.pos[oriCor[0]][oriCor[1]]
 
         try:
@@ -132,7 +132,7 @@ class NewBoard():
     def CheckPieceDirections(self, position):
         destList = []
         captureDone = False
-        print "Given position in CheckPieceDirections:", position
+        #print "Given position in CheckPieceDirections:", position
         directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
         
         for direction in directions:
@@ -155,6 +155,7 @@ class NewBoard():
 
         moveList = []
         movesAreCaps = False
+        
 
         for space in range(len(self.pos[0])):
             for row in range(len(self.pos)):
@@ -174,13 +175,20 @@ class NewBoard():
                                 moveList = []
                                 movesAreCaps = True
 
-                            structuredMove = [[space, row]]
+                            maxJumps = []
 
                             for dest in destList:
-                                structuredMove.append(dest)
-                            print "structuredMove", structuredMove
-                            print "moveList", moveList
-                            moveList.append(self.CaptureChainer(structuredMove[1]))
+
+                                tmpBoard = copy.deepcopy(self)
+                                tmpBoard.Move([space, row], dest)
+
+                                currentJumps = [dest] + tmpBoard.CaptureChainer(dest)
+
+                                if len(currentJumps) > len(maxJumps):
+                                    maxJumps = currentJumps
+
+                            moveList.append([[space, row]] + maxJumps)
+                            
 
                         elif movesAreCaps == False:
 
@@ -190,26 +198,24 @@ class NewBoard():
 
     
     def CaptureChainer(self, origin):
-        """ This function expects a movelist. Movelist goes like: [ [[startcor]. [cor1], [cor2]... [corN]], [[startcor]. [cor1], [cor2]... [corN]] ]"""
-        """for example, sublist should each be like: [[0, 0], [2, 2], [0, 4]] """
     
         maxChain = []
 
         destinations, capDone = self.CheckPieceDirections(origin)
 
-        print "current destinations:", destinations
+        #print "origin in capchainer", origin
+        #print "current destinations in capchainer:", destinations
         
         if capDone:
             for cap in destinations:
                 tmpBoard = copy.deepcopy(self)
                 tmpBoard.Move(origin, cap)
-                tmpBoard.Draw()
                 newChain = [cap] + tmpBoard.CaptureChainer(cap)
 
                 if len(newChain) >= len(maxChain):
                     maxChain = newChain
         
-        print maxChain 
+        #print "maxchain in capchainer is", maxChain 
         return maxChain
 
         
@@ -302,10 +308,10 @@ class NewBoard():
                 if len(moveList) == 2:
                     if isinstance(moveList[0], tuple) or isinstance(moveList[0], list):
                         isSingleMove = False
-                        print moveList, "is not a single move"
+                        #print moveList, "is not a single move"
                     else:
                         isSingleMove = True
-                        print moveList, "is a single move"
+                        #print moveList, "is a single move"
                 elif len(moveList) < 2:
                     print "Error! Move must be either one or multiple co-ordinates!"
                     return
