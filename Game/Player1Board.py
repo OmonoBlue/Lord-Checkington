@@ -217,11 +217,7 @@ class NewBoard():
         
         #print "maxchain in capchainer is", maxChain 
         return maxChain
-
-        
-
-
-                        
+           
 
     def Miller2Board(self, millerBoard):
 
@@ -297,10 +293,12 @@ class NewBoard():
             return True
         else:
             return False
+
+
+
         
     def Move(self, origin, moveList):
 
-        
         if (isinstance(origin, tuple) or isinstance(moveList, list)) and len(origin) == 2:
 
             if isinstance(moveList, tuple) or isinstance(moveList, list):
@@ -432,8 +430,21 @@ class NewBoard():
         print ""
             
           
-    def GetStats(self, flipped):
+    def GetStats(self, col):
         statList = []
+
+        try:
+            bob = str(col)
+        except:
+            raise Exception("Color value in GetStats must be a string!")
+        
+        if not (col.upper() == "B" or col.upper() == "R"):
+            raise Exception("Color value in GetStats must be either R or B")
+
+        if col.upper() == "B":
+            flipped = True
+        else:
+            flipped = False
         
         if flipped == True:
             order = -1
@@ -486,8 +497,12 @@ class NewBoard():
                                 else:
                                     statList.append(1 * order)
 
+        statNum = 0
         
-        return statList
+        for num in statList:
+            statNum += num
+        
+        return statNum
 
     @staticmethod
     def Save(board, filename = None):

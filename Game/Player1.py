@@ -1,5 +1,5 @@
 import random
-import board
+import Player1Board as board
 
 Game = board.NewBoard(8, 8)
 
@@ -24,7 +24,8 @@ def millerDraw(givenBoard):
         for y in range(len(givenBoard[x])) :
                 print givenBoard[x][y] + " |" ,
         print ""
-        
+
+
 def main(givenBoard, givenCol):
 
     Game.Miller2Board(givenBoard)
@@ -76,6 +77,7 @@ def main(givenBoard, givenCol):
     for dest in range(1, len(moveChoice)):
         finalResult.append(str(moveChoice[dest][1]) + str(moveChoice[dest][0]))
 
+    print "Game value is", Game.GetStats(givenCol), "for", givenCol
     return finalResult
 
     
