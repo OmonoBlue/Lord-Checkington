@@ -80,7 +80,7 @@ class NewBoard():
                 break
     
     def CheckMove(self, oriCor, direction):
-        
+        print "oricor in CheckMove:", oriCor
         origin = self.pos[oriCor[0]][oriCor[1]]
 
         try:
@@ -95,7 +95,6 @@ class NewBoard():
         elif oriCor[1] + direction[1] < 0 or oriCor[1] + direction[1] > self.height - 1:
             #print "Can't move vertically off board"
             return False
-
         if (origin[P_COL] == 0 and oriCor[1] == self.width - 1) or (origin[P_COL] == 0 and oriCor[1] == 0):
             origin[P_KING] = True
         
@@ -133,7 +132,7 @@ class NewBoard():
     def CheckPieceDirections(self, position):
         destList = []
         captureDone = False
-
+        print "Given position in CheckPieceDirections:", position
         directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
         
         for direction in directions:
@@ -151,63 +150,72 @@ class NewBoard():
 
 
         return destList, captureDone
-
-    def ValidMoveSisterFunc(self, origin):
-        validMoves, capDone = self.CheckPieceDirections([origin[0], origin[1]])
-
-        maxjump = []
-        if capDone:
-            for move in validMoves:
-                print move
-                tmpboard = copy.copy(self)
-                tmpboard.Move(origin, move)
-                jump = [move, tmpboard.ValidMoveSisterFunc(move)]
-
-                if len(jump) > len(maxjump):
-                    maxjump = jump
-
-        return maxjump
         
     def GetValidMoves(self, col):
 
-        maxJumps = []
-        normalMoves = []
-        if isinstance(col, int) == False:
-            try:
-                colour = int(col)
-            except:
-                raise Exception("Error! Valid colour must be provided (0 is red, 1 is black)")
-        elif col < 0 or col > 2:
-            raise Exception("Error! Colour must be either 0 or 1")
+        moveList = []
+        movesAreCaps = False
 
-        #Loop through ever space on board
-        for row in range(len(self.pos[0])):
-            for space in range(len(self.pos)):
+        for space in range(len(self.pos[0])):
+            for row in range(len(self.pos)):
 
-                #Check if there is a piece on the space
-                if self.pos[space][row] != None:
+                currentSpace = self.pos[space][row]
 
-                    #Check if piece is the wanted colour
-                    if self.pos[space][row][P_COL] == col:
+                if currentSpace != None:
 
-                        dests, capDone = self.CheckPieceDirections([space, row])
+                    if currentSpace[P_COL] == col:
 
-                        if capDone:
-                            jump = self.ValidMoveSisterFunc([space, row])
+                        destList, captureDone = self.CheckPieceDirections([space, row])
+                        currentMove = [[space, row]]
 
-                            if len(jumps) > maxJumps:
-                                maxJumps = jumps
-                        else:
-                            normalMoves.append([[space, row], dests])
+                        if captureDone:
 
+                            if movesAreCaps == False:
+                                moveList = []
+                                movesAreCaps = True
 
-        if len(maxJumps) > 0:
-            
-            return maxJumps
-        else:
-            return normalMoves
+                            structuredMove = [[space, row]]
+
+                            for dest in destList:
+                                structuredMove.append(dest)
+                            print "structuredMove", structuredMove
+                            print "moveList", moveList
+                            moveList.append(self.CaptureChainer(structuredMove[1]))
+
+                        elif movesAreCaps == False:
+
+                            moveList.append([[space, row], destList])
+
+        return moveList, movesAreCaps
+
+    
+    def CaptureChainer(self, origin):
+        """ This function expects a movelist. Movelist goes like: [ [[startcor]. [cor1], [cor2]... [corN]], [[startcor]. [cor1], [cor2]... [corN]] ]"""
+        """for example, sublist should each be like: [[0, 0], [2, 2], [0, 4]] """
+    
+        maxChain = []
+
+        destinations, capDone = self.CheckPieceDirections(origin)
+
+        print "current destinations:", destinations
+        
+        if capDone:
+            for cap in destinations:
+                tmpBoard = copy.deepcopy(self)
+                tmpBoard.Move(origin, cap)
+                tmpBoard.Draw()
+                newChain = [cap] + tmpBoard.CaptureChainer(cap)
+
+                if len(newChain) >= len(maxChain):
+                    maxChain = newChain
+        
+        print maxChain 
+        return maxChain
+
         
 
+
+                        
 
     def Miller2Board(self, millerBoard):
 
@@ -292,15 +300,18 @@ class NewBoard():
             if isinstance(moveList, tuple) or isinstance(moveList, list):
 
                 if len(moveList) == 2:
-                    if isinstance(moveList[0], tuple) or isinstance(moveList, list):
+                    if isinstance(moveList[0], tuple) or isinstance(moveList[0], list):
                         isSingleMove = False
+                        print moveList, "is not a single move"
                     else:
                         isSingleMove = True
+                        print moveList, "is a single move"
                 elif len(moveList) < 2:
                     print "Error! Move must be either one or multiple co-ordinates!"
                     return
                 else:
                     isSingleMove = False
+                    print moveList, "is not a single move"
             else:
                 print "Error! Move must be a list!"
                 return
@@ -309,6 +320,11 @@ class NewBoard():
             return
 
 ##        print "origin is", origin
+
+        try:
+            playerColour = self.pos[origin[0]][origin[1]][P_COL]
+        except:
+            return
 
         if isSingleMove:
             direction = ( (moveList[0] - origin[0]) / abs(moveList[0] - origin[0]) , (moveList[1] - origin[1]) / abs(moveList[1] - origin[1]) )
@@ -341,7 +357,6 @@ class NewBoard():
             newOrigin = origin
             pieceMoved = False
             for move in moveList:
-                print move
                 direction = ( (move[0] - newOrigin[0]) / abs(move[0] - newOrigin[0]) , (move[1] - newOrigin[1]) / abs(move[1] - newOrigin[1]) )
                 if self.CheckMove(newOrigin, direction) == "Capture":
                     self.pos[move[0]][move[1]] = self.pos[newOrigin[0]][newOrigin[1]]

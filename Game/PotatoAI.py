@@ -8,9 +8,9 @@ testBoard = [['  X ', 'R01P', '  X ', 'R03P', '  X ', 'R05P', '  X ', 'R07P'],
             ['  X ', 'R21P', '  X ', '    ', '  X ', 'R25P', '  X ', 'R27P'],
             ['    ', '  X ', '    ', '  X ', 'R23P', '  X ', '    ', '  X '],
             ['  X ', '    ', '  X ', 'B52P', '  X ', '    ', '  X ', '    '],
-            ['B50P', '  X ', '    ', '  X ', 'B54P', '  X ', 'B56P', '  X '],
+            ['B50P', '  X ', '    ', '  X ', 'B54P', '  X ', '    ', '  X '],
             ['  X ', 'B61P', '  X ', 'B63P', '  X ', 'B65P', '  X ', 'B67P'],
-            ['B70P', '  X ', 'B72P', '  X ', 'B74P', '  X ', 'B76P', '  X ']]
+            ['    ', '  X ', 'B72P', '  X ', '    ', '  X ', 'B76P', '  X ']]
 
 millerCols = {0 : "B",
               1 : "R"}
@@ -35,6 +35,8 @@ def main(givenBoard, givenCol):
     # Get some baseline available moves
     starterMoves, moveType = Game.GetValidMoves(moveCol)
 
+    return starterMoves
+    
     # Draw the MillerBoard
     for x in range(len(givenBoard)) :
         print "|",
