@@ -14,12 +14,12 @@ startBoard = [['  X ', 'R01P', '  X ', 'R03P', '  X ', 'R05P', '  X ', 'R07P'],
 
 testBoard = [['  X ', 'R01P', '  X ', 'R03P', '  X ', 'R05P', '  X ', 'R07P'],
             ['R10P', '  X ', 'R12P', '  X ', 'R14P', '  X ', 'R16P', '  X '],
-            ['  X ', 'R21P', '  X ', '    ', '  X ', 'R25P', '  X ', 'R27P'],
-            ['    ', '  X ', '    ', '  X ', 'R23P', '  X ', 'B36P', '  X '],
-            ['  X ', '    ', '  X ', 'B52P', '  X ', '    ', '  X ', '    '],
-            ['B50P', '  X ', '    ', '  X ', 'B54P', '  X ', '    ', '  X '],
-            ['  X ', 'B61P', '  X ', 'B63P', '  X ', 'B65P', '  X ', 'B67P'],
-            ['    ', '  X ', 'B72P', '  X ', '    ', '  X ', 'B76P', '  X ']]
+            ['  X ', 'B21P', '  X ', '    ', '  X ', 'R25P', '  X ', 'R27P'],
+            ['    ', '  X ', '    ', '  X ', 'R34P', '  X ', 'B36P', '  X '],
+            ['  X ', 'B41P', '  X ', 'B52P', '  X ', '    ', '  X ', '    '],
+            ['B50P', '  X ', '    ', '  X ', 'B54P', '  X ', 'R46P', '  X '],
+            ['  X ', 'B61P', '  X ', '    ', '  X ', 'B65P', '  X ', 'B67P'],
+            ['B70P', '  X ', 'B72P', '  X ', '    ', '  X ', 'B76P', '  X ']]
 
 millerCols = {0 : "B",
               1 : "R"}
@@ -67,10 +67,86 @@ def main(givenBoard, givenCol):
     # If moves are captures, choose the largest capture chain possible
     if movesAreCaps:
         maxMove = []
+        goodMoves = []
         for move in starterMoves:
             if len(move) > len(maxMove):
                 maxMove = move
-        moveChoice = maxMove
+            elif len(move) == len(maxMove):
+                if len(goodMoves) == 0:
+                    goodMoves.append(maxMove)
+                goodMoves.append(move)
+
+        if len(goodMoves) == 0:
+            moveChoice = maxMove
+
+        elif len(goodMoves) == 1:
+            moveChoice = goodMoves[0]
+
+        else:
+            # If there are multiple hops of the same length, choose the one with the least repercussions
+
+            moveOverallPointValues = []
+            
+            for move in goodMoves:
+
+                tmpDestList  = []
+
+                for dest in range(1, len(move)):
+                    tmpDestList.append(move[dest])
+                
+                tmpBoard = copy.deepcopy(Game)
+                #print tmpDestList
+                tmpBoard.Move(move[0], tmpDestList)
+                #tmpBoard.Draw()
+
+                enemyMoveList, enemyCanCap = tmpBoard.GetValidMoves((moveCol - 1) * -1)
+                
+                currentMovePointValue = 0
+
+                # Loop through every possible enemy move, add the point value that the board returns from the enemy doing that move.
+                
+                for enemyMove in enemyMoveList:
+
+                    enemyDestList = []
+
+                    for dest in range(1, len(enemyMove)):
+                        enemyDestList.append(enemyMove[dest])
+                    
+                    tmpEnemyBoard = copy.deepcopy(tmpBoard)
+                    #print enemyDestList
+
+                    if len(enemyDestList) == 1:
+                        tmpEnemyBoard.Move(enemyMove[0], enemyDestList[0])
+                    else:
+                        tmpEnemyBoard.Move(enemyMove[0], enemyDestList)
+                        
+                    currentMovePointValue += tmpEnemyBoard.GetStats(millerCols[moveCol])
+
+                    del tmpEnemyBoard
+
+                if len(enemyMoveList) == 0:
+                    print "Checkmate boiiii"
+                    currentMovePointValue = 9999
+                else:
+                    currentMovePointValue /= len(enemyMoveList)
+                
+                moveOverallPointValues.append(currentMovePointValue)
+
+                del tmpBoard
+                
+
+            bestMoves = []
+            bestMovePointValue = max(moveOverallPointValues)
+            bestMoveIndex = moveOverallPointValues.index(bestMovePointValue)
+
+            bestMoves.append(goodMoves[bestMoveIndex])
+            
+            for move in range(len(goodMoves)):
+
+                if move != bestMoveIndex and moveOverallPointValues[move] == bestMovePointValue:
+                    bestMoves.append(goodMoves[move])
+
+            moveChoice = bestMoves[random.randint(0, len(bestMoves) - 1)]
 
         
     else: # If the moves are not captures...
@@ -124,8 +200,13 @@ def main(givenBoard, givenCol):
                 
                 for enemyMove in enemyMoveList:
 
+                    enemyDestList = []
+
+                    for dest in range(1, len(enemyMoveList)):
+                        enemyDestList.append(dest)
+                    
                     tmpEnemyBoard = copy.deepcopy(tmpBoard)
-                    tmpEnemyBoard.Move(enemyMove[0], enemyMove[1])
+                    tmpEnemyBoard.Move(enemyMove[0], enemyDestList)
                     currentMovePointValue += tmpEnemyBoard.GetStats(millerCols[moveCol])
 
                     del tmpEnemyBoard
@@ -161,7 +242,7 @@ def main(givenBoard, givenCol):
     finalPiece = millerPiece[Game.pos[moveChoice[0][0]][moveChoice[0][1]][board.P_KING]]
 
     #print moveChoice
-    print starterMoves
+    #print starterMoves
     #Reverse co-ordinare to account for Millerboard
     
     for cor in moveChoice:
@@ -178,7 +259,3 @@ def main(givenBoard, givenCol):
 
     #print "Game value is", Game.GetStats(givenCol), "for", givenCol
     return finalResult
-
-
-
-    
