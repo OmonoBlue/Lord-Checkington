@@ -95,7 +95,7 @@ class NewBoard():
         elif oriCor[1] + direction[1] < 0 or oriCor[1] + direction[1] > self.height - 1:
             #print "Can't move vertically off board"
             return False
-        if (origin[P_COL] == 0 and oriCor[1] == self.width - 1) or (origin[P_COL] == 0 and oriCor[1] == 0):
+        if (origin[P_COL] == 0 and oriCor[1] == self.width - 1) or (origin[P_COL] == 1 and oriCor[1] == 0):
             origin[P_KING] = True
         
         #Check if there is a moveable piece
@@ -184,6 +184,8 @@ class NewBoard():
 
                                 currentJumps = [dest] + tmpBoard.CaptureChainer(dest)
 
+                                del tmpBoard
+
                                 if len(currentJumps) > len(maxJumps):
                                     maxJumps = currentJumps
 
@@ -192,8 +194,17 @@ class NewBoard():
 
                         elif movesAreCaps == False:
 
-                            moveList.append([[space, row], destList])
-
+                            for dest in destList:
+                                moveList.append([[space, row], dest])
+                            
+        validList = []
+    
+        for move in moveList:
+            if len(move) > 1:
+                validList.append(move)
+        
+        moveList = validList
+        
         return moveList, movesAreCaps
 
     
@@ -211,6 +222,8 @@ class NewBoard():
                 tmpBoard = copy.deepcopy(self)
                 tmpBoard.Move(origin, cap)
                 newChain = [cap] + tmpBoard.CaptureChainer(cap)
+
+                del tmpBoard
 
                 if len(newChain) >= len(maxChain):
                     maxChain = newChain
